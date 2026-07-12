@@ -51,6 +51,33 @@ alter table public.activities enable row level security;
 alter table public.gallery enable row level security;
 alter table public.members enable row level security;
 
+-- Bersihkan policy lama agar schema aman dijalankan ulang
+drop policy if exists "Allow public read access to notes" on public.notes;
+drop policy if exists "Allow public read access to programs" on public.programs;
+drop policy if exists "Allow public read access to activities" on public.activities;
+drop policy if exists "Allow public read access to gallery" on public.gallery;
+drop policy if exists "Allow public read access to members" on public.members;
+
+drop policy if exists "Allow authenticated users to insert notes" on public.notes;
+drop policy if exists "Allow authenticated users to update notes" on public.notes;
+drop policy if exists "Allow authenticated users to delete notes" on public.notes;
+
+drop policy if exists "Allow authenticated users to insert programs" on public.programs;
+drop policy if exists "Allow authenticated users to update programs" on public.programs;
+drop policy if exists "Allow authenticated users to delete programs" on public.programs;
+
+drop policy if exists "Allow authenticated users to insert activities" on public.activities;
+drop policy if exists "Allow authenticated users to update activities" on public.activities;
+drop policy if exists "Allow authenticated users to delete activities" on public.activities;
+
+drop policy if exists "Allow authenticated users to insert gallery" on public.gallery;
+drop policy if exists "Allow authenticated users to update gallery" on public.gallery;
+drop policy if exists "Allow authenticated users to delete gallery" on public.gallery;
+
+drop policy if exists "Allow authenticated users to insert members" on public.members;
+drop policy if exists "Allow authenticated users to update members" on public.members;
+drop policy if exists "Allow authenticated users to delete members" on public.members;
+
 -- Kebijakan baca publik
 create policy "Allow public read access to notes"
   on public.notes

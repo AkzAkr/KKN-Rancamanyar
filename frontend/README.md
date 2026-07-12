@@ -39,3 +39,48 @@ components/
 - Semua data (nama anggota, program kerja, catatan mading, dsb) saat ini masih hardcoded di masing-masing komponen, persis seperti versi HTML aslinya — silakan ubah langsung di file komponen terkait, atau nanti dipindah ke CMS/API bila dibutuhkan.
 - Font Fraunces & Inter dimuat otomatis lewat `next/font/google` (lebih cepat & tanpa perlu link manual ke Google Fonts).
 - Semua warna & style custom (termasuk class Tailwind arbitrary seperti `bg-[#2C3B2E]/10`) dipertahankan apa adanya agar tampilan identik.
+
+## Deploy dengan Supabase dan Vercel
+
+### 1. Siapkan Supabase
+
+1. Buat project baru di Supabase.
+2. Buka SQL Editor, lalu jalankan isi file `supabase/schema.sql`.
+3. Buka Authentication -> Users, lalu buat user admin dengan email dan password.
+4. Buka Project Settings -> API, lalu salin Project URL dan anon public key.
+
+> Jangan masukkan `service_role` key ke aplikasi Next.js atau Vercel env publik. Project ini hanya membutuhkan anon public key karena akses tulis dibatasi oleh RLS dan Supabase Auth.
+
+### 2. Konfigurasi environment
+
+Isi environment variable berikut di lokal dan Vercel:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_ADMIN_EMAILS=admin@kkn.com
+```
+
+Jika admin lebih dari satu, pisahkan email dengan koma:
+
+```bash
+NEXT_PUBLIC_ADMIN_EMAILS=admin@kkn.com,sekretaris@kkn.com
+```
+
+### 3. Deploy ke Vercel
+
+Saat import repository di Vercel, gunakan konfigurasi ini:
+
+- Framework Preset: `Next.js`
+- Root Directory: `frontend`
+- Install Command: `npm install`
+- Build Command: `npm run build`
+- Output Directory: biarkan default untuk Next.js
+
+Tambahkan environment variable dari langkah sebelumnya di Project Settings -> Environment Variables, lalu deploy ulang.
+
+### 4. Cek hasil deploy
+
+- Halaman publik: `https://domain-vercel-anda/`
+- Panel admin: `https://domain-vercel-anda/admin`
+- Login memakai user yang dibuat di Supabase Auth dan emailnya tercantum di `NEXT_PUBLIC_ADMIN_EMAILS`.
