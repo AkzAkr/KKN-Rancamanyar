@@ -24,6 +24,7 @@ create table if not exists public.activities (
   title text not null,
   activity_date date,
   description text,
+  image_url text,
   created_at timestamp with time zone default now()
 );
 
@@ -47,6 +48,7 @@ create table if not exists public.members (
 );
 
 alter table public.programs add column if not exists image_url text;
+alter table public.activities add column if not exists image_url text;
 alter table public.members add column if not exists image_url text;
 
 -- Bucket publik untuk gambar program kerja, galeri, dan profil anggota

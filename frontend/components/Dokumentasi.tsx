@@ -20,7 +20,7 @@ export default function Dokumentasi() {
     const loadActivities = async () => {
       const { data } = await supabase
         .from("activities")
-        .select("id, title, activity_date, description, created_at")
+        .select("id, title, activity_date, description, image_url, created_at")
         .order("activity_date", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false });
 
@@ -66,6 +66,15 @@ export default function Dokumentasi() {
                   )}
                 </div>
                 <div className="content-card rounded-2xl p-6 flex-1 card-hover">
+                  {activity.image_url ? (
+                    <img
+                      src={activity.image_url}
+                      alt={activity.title}
+                      className="mb-5 aspect-video w-full rounded-xl object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : null}
                   <p className="text-xs uppercase tracking-[0.16em] text-[#C08A2E] font-semibold mb-3">
                     {formatDate(activity.activity_date)}
                   </p>

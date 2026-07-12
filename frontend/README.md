@@ -91,7 +91,7 @@ Masuk ke `/admin` memakai akun Supabase Auth yang emailnya ada di `NEXT_PUBLIC_A
 
 - Catatan mading (`notes`)
 - Program kerja (`programs`), termasuk upload gambar program
-- Dokumentasi kegiatan (`activities`)
+- Dokumentasi kegiatan (`activities`), termasuk upload foto lapangan
 - Foto galeri (`gallery`) melalui upload gambar
 - Profil anggota (`members`), termasuk upload foto profil
 

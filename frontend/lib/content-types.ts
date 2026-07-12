@@ -21,6 +21,7 @@ export type ActivityRecord = {
   title: string;
   activity_date: string | null;
   description: string | null;
+  image_url: string | null;
   created_at: string | null;
 };
 

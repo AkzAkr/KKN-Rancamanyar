@@ -39,6 +39,7 @@ type FormState = {
     title: string;
     activity_date: string;
     description: string;
+    image_url: string;
   };
   gallery: {
     title: string;
@@ -83,6 +84,7 @@ const initialForms: FormState = {
     title: "",
     activity_date: "",
     description: "",
+    image_url: "",
   },
   gallery: {
     title: "",
@@ -117,7 +119,7 @@ const tableLabels: Record<Exclude<ViewKey, "overview">, string> = {
 const selectColumns: Record<Exclude<ViewKey, "overview">, string> = {
   notes: "id, category, title, description, metadata, created_at",
   programs: "id, title, status, description, image_url, created_at",
-  activities: "id, title, activity_date, description, created_at",
+  activities: "id, title, activity_date, description, image_url, created_at",
   gallery: "id, title, image_url, created_at",
   members: "id, name, role, division, study_program, image_url, created_at",
 };
@@ -414,6 +416,7 @@ export default function AdminPage() {
           title: item.title,
           activity_date: item.activity_date ?? "",
           description: item.description ?? "",
+          image_url: item.image_url ?? "",
         },
       }));
     }
@@ -447,6 +450,12 @@ export default function AdminPage() {
     setActiveView(table);
     setMessage(null);
     setError(null);
+
+    window.requestAnimationFrame(() => {
+      document
+        .getElementById(`${table}-form`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   };
 
   const saveRecord = async (
@@ -731,7 +740,9 @@ export default function AdminPage() {
                 records={records.activities}
                 editing={editing?.table === "activities" ? editing : null}
                 saving={saving}
+                uploading={uploading === "activities"}
                 onChange={(field, value) => updateForm("activities", field, value)}
+                onUpload={(file) => uploadImage("activities", file)}
                 onSubmit={(event) => saveRecord("activities", event)}
                 onEdit={(record) => startEdit("activities", record)}
                 onDelete={(id) => deleteRecord("activities", id)}
@@ -993,7 +1004,7 @@ function NotesView({
 }: CommonViewProps<NoteRecord, FormState["notes"]>) {
   return (
     <Section title="Pencatatan" subtitle="Kelola catatan yang tampil di papan pencatatan website.">
-      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+      <form id="notes-form" onSubmit={onSubmit} className="mb-6 scroll-mt-24 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Kategori">
             <select
@@ -1084,7 +1095,7 @@ function ProgramsView({
 }: CommonViewProps<ProgramRecord, FormState["programs"]> & UploadViewProps) {
   return (
     <Section title="Program Kerja" subtitle="Kelola program kerja yang tampil di halaman utama.">
-      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+      <form id="programs-form" onSubmit={onSubmit} className="mb-6 scroll-mt-24 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Nama Program">
             <input required value={form.title} onChange={(event) => onChange("title", event.target.value)} className={inputClass} />
@@ -1144,15 +1155,17 @@ function ActivitiesView({
   records,
   editing,
   saving,
+  uploading,
   onChange,
+  onUpload,
   onSubmit,
   onEdit,
   onDelete,
   onCancel,
-}: CommonViewProps<ActivityRecord, FormState["activities"]>) {
+}: CommonViewProps<ActivityRecord, FormState["activities"]> & UploadViewProps) {
   return (
     <Section title="Dokumentasi" subtitle="Kelola cerita kegiatan dan tanggal pelaksanaannya.">
-      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+      <form id="activities-form" onSubmit={onSubmit} className="mb-6 scroll-mt-24 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Judul Kegiatan">
             <input required value={form.title} onChange={(event) => onChange("title", event.target.value)} className={inputClass} />
@@ -1164,6 +1177,13 @@ function ActivitiesView({
         <Field label="Deskripsi">
           <textarea value={form.description} onChange={(event) => onChange("description", event.target.value)} rows={4} className={`${inputClass} resize-none`} />
         </Field>
+        <ImageUploadField
+          label="Foto Dokumentasi Lapangan"
+          value={form.image_url}
+          uploading={uploading}
+          onUpload={onUpload}
+          onClear={() => onChange("image_url", "")}
+        />
         <FormActions editing={editing} saving={saving} onCancel={onCancel} />
       </form>
 
@@ -1173,6 +1193,13 @@ function ActivitiesView({
         <div className="space-y-4">
           {records.map((record) => (
             <div key={record.id} className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-5">
+              {record.image_url ? (
+                <img
+                  src={record.image_url}
+                  alt={record.title}
+                  className="mb-4 aspect-video w-full rounded-xl object-cover"
+                />
+              ) : null}
               <div className="mb-3 flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold text-[#C08A2E]">{formatDate(record.activity_date)}</p>
@@ -1204,7 +1231,7 @@ function GalleryView({
 }: CommonViewProps<GalleryRecord, FormState["gallery"]> & UploadViewProps) {
   return (
     <Section title="Galeri" subtitle="Tambahkan URL foto dari Supabase Storage, Drive publik, atau hosting gambar lain.">
-      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+      <form id="gallery-form" onSubmit={onSubmit} className="mb-6 scroll-mt-24 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
         <div>
           <Field label="Judul Foto">
             <input value={form.title} onChange={(event) => onChange("title", event.target.value)} className={inputClass} />
@@ -1256,7 +1283,7 @@ function MembersView({
 }: CommonViewProps<MemberRecord, FormState["members"]> & UploadViewProps) {
   return (
     <Section title="Anggota" subtitle="Kelola nama, jabatan, divisi, dan program studi anggota KKN.">
-      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+      <form id="members-form" onSubmit={onSubmit} className="mb-6 scroll-mt-24 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Nama">
             <input required value={form.name} onChange={(event) => onChange("name", event.target.value)} className={inputClass} />
