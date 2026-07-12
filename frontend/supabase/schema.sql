@@ -44,12 +44,35 @@ create table if not exists public.members (
   created_at timestamp with time zone default now()
 );
 
+-- Daftar email yang boleh menulis data dari admin panel
+create table if not exists public.admin_users (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  created_at timestamp with time zone default now()
+);
+
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.admin_users
+    where lower(email) = lower(auth.jwt() ->> 'email')
+  );
+$$;
+
+grant execute on function public.is_admin() to authenticated;
+
 -- Aktifkan RLS
 alter table public.notes enable row level security;
 alter table public.programs enable row level security;
 alter table public.activities enable row level security;
 alter table public.gallery enable row level security;
 alter table public.members enable row level security;
+alter table public.admin_users enable row level security;
 
 -- Bersihkan policy lama agar schema aman dijalankan ulang
 drop policy if exists "Allow public read access to notes" on public.notes;
@@ -78,6 +101,8 @@ drop policy if exists "Allow authenticated users to insert members" on public.me
 drop policy if exists "Allow authenticated users to update members" on public.members;
 drop policy if exists "Allow authenticated users to delete members" on public.members;
 
+drop policy if exists "Allow admin users to read admin list" on public.admin_users;
+
 -- Kebijakan baca publik
 create policy "Allow public read access to notes"
   on public.notes
@@ -104,78 +129,88 @@ create policy "Allow public read access to members"
   for select
   using (true);
 
+create policy "Allow admin users to read admin list"
+  on public.admin_users
+  for select
+  using (public.is_admin());
+
 -- Kebijakan tulis hanya untuk pengguna terautentikasi
 create policy "Allow authenticated users to insert notes"
   on public.notes
   for insert
-  with check (auth.role() = 'authenticated');
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to update notes"
   on public.notes
   for update
-  using (auth.role() = 'authenticated');
+  using (public.is_admin())
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to delete notes"
   on public.notes
   for delete
-  using (auth.role() = 'authenticated');
+  using (public.is_admin());
 
 create policy "Allow authenticated users to insert programs"
   on public.programs
   for insert
-  with check (auth.role() = 'authenticated');
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to update programs"
   on public.programs
   for update
-  using (auth.role() = 'authenticated');
+  using (public.is_admin())
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to delete programs"
   on public.programs
   for delete
-  using (auth.role() = 'authenticated');
+  using (public.is_admin());
 
 create policy "Allow authenticated users to insert activities"
   on public.activities
   for insert
-  with check (auth.role() = 'authenticated');
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to update activities"
   on public.activities
   for update
-  using (auth.role() = 'authenticated');
+  using (public.is_admin())
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to delete activities"
   on public.activities
   for delete
-  using (auth.role() = 'authenticated');
+  using (public.is_admin());
 
 create policy "Allow authenticated users to insert gallery"
   on public.gallery
   for insert
-  with check (auth.role() = 'authenticated');
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to update gallery"
   on public.gallery
   for update
-  using (auth.role() = 'authenticated');
+  using (public.is_admin())
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to delete gallery"
   on public.gallery
   for delete
-  using (auth.role() = 'authenticated');
+  using (public.is_admin());
 
 create policy "Allow authenticated users to insert members"
   on public.members
   for insert
-  with check (auth.role() = 'authenticated');
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to update members"
   on public.members
   for update
-  using (auth.role() = 'authenticated');
+  using (public.is_admin())
+  with check (public.is_admin());
 
 create policy "Allow authenticated users to delete members"
   on public.members
   for delete
-  using (auth.role() = 'authenticated');
+  using (public.is_admin());

@@ -1,25 +1,35 @@
-const PROGRAMS = [
-  {
-    status: "Berjalan",
-    statusClass: "bg-[#4A5D45]/10 text-[#4A5D45]",
-    title: "Pelatihan Digitalisasi UMKM",
-    desc: "Membantu pelaku usaha kecil di desa membuat katalog produk digital dan akun media sosial untuk memperluas pasar di luar desa.",
-  },
-  {
-    status: "Rencana",
-    statusClass: "bg-[#C08A2E]/15 text-[#C08A2E]",
-    title: "Bimbingan Belajar Anak Desa",
-    desc: "Program belajar sore untuk siswa SD dan SMP, fokus pada literasi, numerasi dasar, dan pengenalan komputer sederhana.",
-  },
-  {
-    status: "Selesai",
-    statusClass: "bg-[#2C3B2E]/10 text-[#2C3B2E]",
-    title: "Pemetaan Potensi Desa",
-    desc: "Survei dan pendataan potensi pertanian, kerajinan, dan sumber daya desa sebagai dasar perencanaan program kerja selanjutnya.",
-  },
-];
+"use client";
+
+import { useEffect, useState } from "react";
+import type { ProgramRecord } from "@/lib/content-types";
+import { statusClass } from "@/lib/content-utils";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 export default function ProgramKerja() {
+  const [programs, setPrograms] = useState<ProgramRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
+    const loadPrograms = async () => {
+      const { data } = await supabase
+        .from("programs")
+        .select("id, title, status, description, created_at")
+        .order("created_at", { ascending: false });
+
+      setPrograms(data ?? []);
+      setLoading(false);
+    };
+
+    void loadPrograms();
+  }, []);
+
   return (
     <section
       id="program"
@@ -37,26 +47,36 @@ export default function ProgramKerja() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {PROGRAMS.map((p) => (
-            <div
-              key={p.title}
-              className="bg-white rounded-2xl p-7 border border-[#2C3B2E]/10 card-hover"
-            >
-              <span
-                className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${p.statusClass}`}
+        {loading ? (
+          <div className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-7 text-sm text-[#4A5D45]">
+            Memuat program kerja...
+          </div>
+        ) : programs.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-[#2C3B2E]/20 bg-white/60 p-7 text-sm text-[#4A5D45]">
+            Program kerja belum ditambahkan.
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-6">
+            {programs.map((program) => (
+              <div
+                key={program.id}
+                className="bg-white rounded-2xl p-7 border border-[#2C3B2E]/10 card-hover"
               >
-                {p.status}
-              </span>
-              <h3 className="font-display text-xl font-semibold mb-2">
-                {p.title}
-              </h3>
-              <p className="text-sm text-[#4A5D45] leading-relaxed">
-                {p.desc}
-              </p>
-            </div>
-          ))}
-        </div>
+                <span
+                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${statusClass(program.status)}`}
+                >
+                  {program.status}
+                </span>
+                <h3 className="font-display text-xl font-semibold mb-2">
+                  {program.title}
+                </h3>
+                <p className="text-sm text-[#4A5D45] leading-relaxed">
+                  {program.description || "Belum ada deskripsi."}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

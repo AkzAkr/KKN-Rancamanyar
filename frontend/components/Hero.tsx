@@ -1,12 +1,49 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { getSupabaseClient } from "@/lib/supabase/client";
+
+const INITIAL_STATS = {
+  members: 0,
+  programs: 0,
+  activities: 0,
+};
+
 export default function Hero() {
+  const [stats, setStats] = useState(INITIAL_STATS);
+
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+
+    if (!supabase) {
+      return;
+    }
+
+    const loadStats = async () => {
+      const [members, programs, activities] = await Promise.all([
+        supabase.from("members").select("id", { count: "exact", head: true }),
+        supabase.from("programs").select("id", { count: "exact", head: true }),
+        supabase.from("activities").select("id", { count: "exact", head: true }),
+      ]);
+
+      setStats({
+        members: members.count ?? 0,
+        programs: programs.count ?? 0,
+        activities: activities.count ?? 0,
+      });
+    };
+
+    void loadStats();
+  }, []);
+
   return (
     <section className="relative pt-40 pb-28 px-6 mountain-texture overflow-hidden">
-      {/* arc decoration mirroring logo */}
       <svg
         className="absolute top-16 left-1/2 -translate-x-1/2 w-[640px] max-w-[90vw] opacity-70"
         height="140"
         viewBox="0 0 640 140"
         fill="none"
+        aria-hidden="true"
       >
         <path
           d="M20 130 A 300 300 0 0 1 300 20"
@@ -31,10 +68,10 @@ export default function Hero() {
         </h1>
         <p className="text-[#4A5D45] text-lg leading-relaxed max-w-xl mx-auto mb-10">
           Kelompok Kuliah Kerja Nyata Rancamanyar hadir untuk tumbuh bersama
-          masyarakat — mencatat setiap langkah pengabdian, dari rencana
-          hingga cerita di lapangan.
+          masyarakat, mencatat setiap langkah pengabdian dari rencana hingga
+          cerita di lapangan.
         </p>
-        <div className="flex items-center justify-center gap-4 mb-16">
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
           <a
             href="#program"
             className="px-6 py-3 rounded-full bg-[#2C3B2E] text-[#F7F4ED] text-sm font-semibold hover:bg-[#3d5138] transition-colors"
@@ -52,21 +89,21 @@ export default function Hero() {
         <div className="grid grid-cols-3 max-w-md mx-auto gap-6 pt-8 border-t border-[#2C3B2E]/10">
           <div>
             <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
-              17
+              {stats.members}
             </p>
             <p className="text-xs text-[#4A5D45] mt-1">Anggota Tim</p>
           </div>
           <div>
             <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
-              8
+              {stats.programs}
             </p>
             <p className="text-xs text-[#4A5D45] mt-1">Program Kerja</p>
           </div>
           <div>
             <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
-              45
+              {stats.activities}
             </p>
-            <p className="text-xs text-[#4A5D45] mt-1">Hari Pengabdian</p>
+            <p className="text-xs text-[#4A5D45] mt-1">Dokumentasi</p>
           </div>
         </div>
       </div>

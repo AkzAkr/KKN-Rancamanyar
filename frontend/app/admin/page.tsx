@@ -1,163 +1,133 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { User } from "@supabase/supabase-js";
+import type {
+  ActivityRecord,
+  GalleryRecord,
+  MemberRecord,
+  NoteRecord,
+  ProgramRecord,
+} from "@/lib/content-types";
+import { formatDate } from "@/lib/content-utils";
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
-type NoteRecord = {
+type ViewKey = "overview" | "notes" | "programs" | "activities" | "gallery" | "members";
+
+type RecordsState = {
+  notes: NoteRecord[];
+  programs: ProgramRecord[];
+  activities: ActivityRecord[];
+  gallery: GalleryRecord[];
+  members: MemberRecord[];
+};
+
+type FormState = {
+  notes: {
+    category: string;
+    title: string;
+    description: string;
+    metadata: string;
+  };
+  programs: {
+    title: string;
+    status: string;
+    description: string;
+  };
+  activities: {
+    title: string;
+    activity_date: string;
+    description: string;
+  };
+  gallery: {
+    title: string;
+    image_url: string;
+  };
+  members: {
+    name: string;
+    role: string;
+    division: string;
+    study_program: string;
+  };
+};
+
+type EditingState = {
+  table: Exclude<ViewKey, "overview">;
   id: string;
-  category: string;
-  title: string;
-  description: string | null;
-  metadata: string | null;
-  created_at: string | null;
+} | null;
+
+const emptyRecords: RecordsState = {
+  notes: [],
+  programs: [],
+  activities: [],
+  gallery: [],
+  members: [],
 };
 
-type ViewKey =
-  | "ringkasan"
-  | "pencatatan"
-  | "program"
-  | "dokumentasi"
-  | "galeri"
-  | "anggota";
-
-const initialNoteForm = {
-  category: "Kehadiran",
-  title: "",
-  description: "",
-  metadata: "",
+const initialForms: FormState = {
+  notes: {
+    category: "Kehadiran",
+    title: "",
+    description: "",
+    metadata: "",
+  },
+  programs: {
+    title: "",
+    status: "Rencana",
+    description: "",
+  },
+  activities: {
+    title: "",
+    activity_date: "",
+    description: "",
+  },
+  gallery: {
+    title: "",
+    image_url: "",
+  },
+  members: {
+    name: "",
+    role: "",
+    division: "",
+    study_program: "",
+  },
 };
 
-const sidebarItems: Array<{ key: ViewKey; label: string; icon: JSX.Element }> =
-  [
-    {
-      key: "ringkasan",
-      label: "Ringkasan",
-      icon: (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-        </svg>
-      ),
-    },
-    {
-      key: "pencatatan",
-      label: "Pencatatan",
-      icon: (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M9 2H15V6H9V2Z" />
-          <path d="M4 6H20V22H4V6Z" />
-          <line x1="8" y1="12" x2="16" y2="12" />
-          <line x1="8" y1="16" x2="16" y2="16" />
-        </svg>
-      ),
-    },
-    {
-      key: "program",
-      label: "Program Kerja",
-      icon: (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3 3" />
-        </svg>
-      ),
-    },
-    {
-      key: "dokumentasi",
-      label: "Dokumentasi",
-      icon: (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5V4.5A2.5 2.5 0 0 1 6.5 2Z" />
-        </svg>
-      ),
-    },
-    {
-      key: "galeri",
-      label: "Galeri",
-      icon: (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <circle cx="8.5" cy="8.5" r="1.5" />
-          <path d="M21 15l-5-5L5 21" />
-        </svg>
-      ),
-    },
-    {
-      key: "anggota",
-      label: "Profil Anggota",
-      icon: (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      ),
-    },
-  ];
-
-const programItems = [
-  { title: "Pelatihan Digitalisasi UMKM", status: "Berjalan" },
-  { title: "Bimbingan Belajar Anak Desa", status: "Rencana" },
-  { title: "Pemetaan Potensi Desa", status: "Selesai" },
+const views: Array<{ key: ViewKey; label: string }> = [
+  { key: "overview", label: "Ringkasan" },
+  { key: "notes", label: "Pencatatan" },
+  { key: "programs", label: "Program Kerja" },
+  { key: "activities", label: "Dokumentasi" },
+  { key: "gallery", label: "Galeri" },
+  { key: "members", label: "Anggota" },
 ];
 
-const documentationItems = [
-  { date: "12 Juli 2026", title: "Pembukaan Pelatihan Digitalisasi UMKM" },
-  { date: "8 Juli 2026", title: "Pemetaan Potensi Desa Selesai" },
-];
+const tableLabels: Record<Exclude<ViewKey, "overview">, string> = {
+  notes: "Catatan",
+  programs: "Program Kerja",
+  activities: "Dokumentasi Kegiatan",
+  gallery: "Foto Galeri",
+  members: "Anggota",
+};
 
-const memberItems = [
-  { name: "Fadli Kamil", role: "Ketua", prodi: "—" },
-  { name: "Cipa", role: "Sekretaris", prodi: "—" },
-  { name: "Vera", role: "Sekretaris", prodi: "—" },
-  { name: "Risa", role: "Bendahara", prodi: "—" },
-];
+const selectColumns: Record<Exclude<ViewKey, "overview">, string> = {
+  notes: "id, category, title, description, metadata, created_at",
+  programs: "id, title, status, description, created_at",
+  activities: "id, title, activity_date, description, created_at",
+  gallery: "id, title, image_url, created_at",
+  members: "id, name, role, division, study_program, created_at",
+};
+
+function cleanPayload<T extends Record<string, string>>(form: T) {
+  return Object.fromEntries(
+    Object.entries(form).map(([key, value]) => [key, value.trim() || null]),
+  );
+}
+
+function getInitials(user: User | null) {
+  const email = user?.email ?? "Admin";
+  return email.slice(0, 2).toUpperCase();
+}
 
 export default function AdminPage() {
   const [authUser, setAuthUser] = useState<User | null>(null);
@@ -165,24 +135,31 @@ export default function AdminPage() {
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
-  const [activeView, setActiveView] = useState<ViewKey>("ringkasan");
-  const [notes, setNotes] = useState<NoteRecord[]>([]);
-  const [form, setForm] = useState(initialNoteForm);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [activeView, setActiveView] = useState<ViewKey>("overview");
+  const [records, setRecords] = useState<RecordsState>(emptyRecords);
+  const [forms, setForms] = useState<FormState>(initialForms);
+  const [editing, setEditing] = useState<EditingState>(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const supabaseConfigured = isSupabaseConfigured();
-  const allowedAdminEmails = (
-    process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "admin@kkn.com"
-  )
-    .split(",")
-    .map((value) => value.trim().toLowerCase())
-    .filter(Boolean);
+  const allowedAdminEmails = useMemo(
+    () =>
+      (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "admin@kkn.com")
+        .split(",")
+        .map((value) => value.trim().toLowerCase())
+        .filter(Boolean),
+    [],
+  );
+
+  const isAllowedAdmin = (email?: string | null) =>
+    Boolean(email && allowedAdminEmails.includes(email.toLowerCase()));
 
   useEffect(() => {
     let isMounted = true;
+    let unsubscribe: (() => void) | undefined;
 
     const initializeAuth = async () => {
       const supabase = getSupabaseClient();
@@ -201,7 +178,8 @@ export default function AdminPage() {
         return;
       }
 
-      setAuthUser(session?.user ?? null);
+      const nextUser = session?.user ?? null;
+      setAuthUser(isAllowedAdmin(nextUser?.email) ? nextUser : null);
       setAuthChecking(false);
 
       const { data: authListener } = supabase.auth.onAuthStateChange(
@@ -209,68 +187,81 @@ export default function AdminPage() {
           if (!isMounted) {
             return;
           }
-          setAuthUser(nextSession?.user ?? null);
+          const user = nextSession?.user ?? null;
+          setAuthUser(isAllowedAdmin(user?.email) ? user : null);
         },
       );
 
-      return () => {
-        authListener.subscription.unsubscribe();
-      };
+      unsubscribe = () => authListener.subscription.unsubscribe();
     };
 
     void initializeAuth();
 
     return () => {
       isMounted = false;
+      unsubscribe?.();
     };
-  }, []);
+  }, [allowedAdminEmails]);
 
-  const loadNotes = async () => {
+  const loadTable = async (table: Exclude<ViewKey, "overview">) => {
     const supabase = getSupabaseClient();
+    if (!supabase) {
+      return [];
+    }
 
-    if (!supabase || !authUser) {
-      setNotes([]);
-      setLoading(false);
-      if (!authUser) {
-        return;
-      }
-      setError(
-        "Supabase belum dikonfigurasi. Isi NEXT_PUBLIC_SUPABASE_URL dan NEXT_PUBLIC_SUPABASE_ANON_KEY terlebih dahulu.",
-      );
+    const query = supabase.from(table).select(selectColumns[table]);
+    const orderedQuery =
+      table === "activities"
+        ? query
+            .order("activity_date", { ascending: false, nullsFirst: false })
+            .order("created_at", { ascending: false })
+        : query.order("created_at", { ascending: table === "members" });
+
+    const { data, error: loadError } = await orderedQuery;
+
+    if (loadError) {
+      throw loadError;
+    }
+
+    return data ?? [];
+  };
+
+  const loadAll = async () => {
+    if (!authUser) {
       return;
     }
 
     setLoading(true);
-    const { data, error } = await supabase
-      .from("notes")
-      .select("id, category, title, description, metadata, created_at")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      setError(error.message);
-      setNotes([]);
-      setLoading(false);
-      return;
-    }
-
-    setNotes(data ?? []);
     setError(null);
-    setLoading(false);
+
+    try {
+      const [notes, programs, activities, gallery, members] = await Promise.all([
+        loadTable("notes"),
+        loadTable("programs"),
+        loadTable("activities"),
+        loadTable("gallery"),
+        loadTable("members"),
+      ]);
+
+      setRecords({
+        notes: notes as unknown as NoteRecord[],
+        programs: programs as unknown as ProgramRecord[],
+        activities: activities as unknown as ActivityRecord[],
+        gallery: gallery as unknown as GalleryRecord[],
+        members: members as unknown as MemberRecord[],
+      });
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Gagal memuat data.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    if (authChecking) {
-      return;
+    if (!authChecking && authUser) {
+      void loadAll();
     }
-
-    if (!authUser) {
-      setNotes([]);
-      setLoading(false);
-      return;
-    }
-
-    void loadNotes();
-  }, [authUser, authChecking]);
+  }, [authChecking, authUser]);
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -284,21 +275,18 @@ export default function AdminPage() {
     setLoginLoading(true);
     setLoginError(null);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
       email: loginForm.email.trim(),
       password: loginForm.password,
     });
 
-    if (error) {
-      setLoginError(error.message);
+    if (authError) {
+      setLoginError(authError.message);
       setLoginLoading(false);
       return;
     }
 
-    const email = data.user?.email?.toLowerCase() ?? "";
-    const isAllowed = allowedAdminEmails.includes(email);
-
-    if (!isAllowed) {
+    if (!isAllowedAdmin(data.user?.email)) {
       await supabase.auth.signOut();
       setLoginError("Akun ini tidak memiliki akses admin.");
       setLoginLoading(false);
@@ -315,28 +303,102 @@ export default function AdminPage() {
       await supabase.auth.signOut();
     }
     setAuthUser(null);
+    setRecords(emptyRecords);
     setLoginForm({ email: "", password: "" });
-    setLoginError(null);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const resetForm = (table: Exclude<ViewKey, "overview">) => {
+    setForms((current) => ({ ...current, [table]: initialForms[table] }));
+    setEditing(null);
+  };
+
+  const updateForm = (
+    table: Exclude<ViewKey, "overview">,
+    field: string,
+    value: string,
+  ) => {
+    setForms((current) => ({
+      ...current,
+      [table]: { ...current[table], [field]: value },
+    }));
+  };
+
+  const startEdit = (table: Exclude<ViewKey, "overview">, record: RecordsState[typeof table][number]) => {
+    if (table === "notes") {
+      const item = record as NoteRecord;
+      setForms((current) => ({
+        ...current,
+        notes: {
+          category: item.category,
+          title: item.title,
+          description: item.description ?? "",
+          metadata: item.metadata ?? "",
+        },
+      }));
+    }
+
+    if (table === "programs") {
+      const item = record as ProgramRecord;
+      setForms((current) => ({
+        ...current,
+        programs: {
+          title: item.title,
+          status: item.status,
+          description: item.description ?? "",
+        },
+      }));
+    }
+
+    if (table === "activities") {
+      const item = record as ActivityRecord;
+      setForms((current) => ({
+        ...current,
+        activities: {
+          title: item.title,
+          activity_date: item.activity_date ?? "",
+          description: item.description ?? "",
+        },
+      }));
+    }
+
+    if (table === "gallery") {
+      const item = record as GalleryRecord;
+      setForms((current) => ({
+        ...current,
+        gallery: {
+          title: item.title ?? "",
+          image_url: item.image_url ?? "",
+        },
+      }));
+    }
+
+    if (table === "members") {
+      const item = record as MemberRecord;
+      setForms((current) => ({
+        ...current,
+        members: {
+          name: item.name,
+          role: item.role ?? "",
+          division: item.division ?? "",
+          study_program: item.study_program ?? "",
+        },
+      }));
+    }
+
+    setEditing({ table, id: record.id });
+    setActiveView(table);
+    setMessage(null);
+    setError(null);
+  };
+
+  const saveRecord = async (
+    table: Exclude<ViewKey, "overview">,
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
 
-    if (!supabaseConfigured) {
-      setError("Konfigurasi Supabase belum lengkap.");
-      return;
-    }
-
-    if (!authUser) {
-      setError("Silakan login kembali sebelum mengubah data.");
-      return;
-    }
-
-    const allowed = allowedAdminEmails.includes(
-      authUser.email?.toLowerCase() ?? "",
-    );
-    if (!allowed) {
-      setError("Akun Anda tidak memiliki akses admin.");
+    if (!supabaseConfigured || !authUser) {
+      setError("Silakan login dan pastikan konfigurasi Supabase sudah lengkap.");
       return;
     }
 
@@ -345,32 +407,74 @@ export default function AdminPage() {
       return;
     }
 
-    setSubmitting(true);
+    setSaving(true);
     setMessage(null);
     setError(null);
 
-    const { error } = await supabase.from("notes").insert({
-      category: form.category,
-      title: form.title,
-      description: form.description,
-      metadata: form.metadata || "Ditambahkan lewat admin panel",
-    });
+    const payload = cleanPayload(forms[table]);
+    const activeEdit = editing?.table === table ? editing : null;
+    const request = activeEdit
+      ? supabase.from(table).update(payload).eq("id", activeEdit.id)
+      : supabase.from(table).insert(payload);
 
-    if (error) {
-      setError(error.message);
-      setSubmitting(false);
+    const { error: saveError } = await request;
+
+    if (saveError) {
+      setError(saveError.message);
+      setSaving(false);
       return;
     }
 
-    setMessage("Catatan berhasil disimpan ke Supabase.");
-    setForm(initialNoteForm);
-    await loadNotes();
-    setSubmitting(false);
+    setMessage(
+      `${tableLabels[table]} berhasil ${activeEdit ? "diperbarui" : "ditambahkan"}.`,
+    );
+    resetForm(table);
+    await loadAll();
+    setSaving(false);
   };
 
-  return (
-    <main className="min-h-screen bg-[#F7F4ED] text-[#2C3B2E]">
-      {!authUser ? (
+  const deleteRecord = async (table: Exclude<ViewKey, "overview">, id: string) => {
+    const confirmed = window.confirm(`Hapus ${tableLabels[table].toLowerCase()} ini?`);
+    if (!confirmed) {
+      return;
+    }
+
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return;
+    }
+
+    setSaving(true);
+    setMessage(null);
+    setError(null);
+
+    const { error: deleteError } = await supabase.from(table).delete().eq("id", id);
+
+    if (deleteError) {
+      setError(deleteError.message);
+      setSaving(false);
+      return;
+    }
+
+    setMessage(`${tableLabels[table]} berhasil dihapus.`);
+    if (editing?.table === table && editing.id === id) {
+      resetForm(table);
+    }
+    await loadAll();
+    setSaving(false);
+  };
+
+  if (authChecking) {
+    return (
+      <main className="min-h-screen bg-[#F7F4ED] text-[#2C3B2E] flex items-center justify-center px-6">
+        <p className="text-sm text-[#4A5D45]">Memeriksa sesi admin...</p>
+      </main>
+    );
+  }
+
+  if (!authUser) {
+    return (
+      <main className="min-h-screen bg-[#F7F4ED] text-[#2C3B2E]">
         <div className="flex min-h-screen items-center justify-center px-6 py-10">
           <div className="w-full max-w-sm">
             <div className="mb-8 text-center">
@@ -390,40 +494,38 @@ export default function AdminPage() {
 
             <div className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-7 shadow-sm">
               <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                  <label className="mb-2 block text-xs font-medium text-[#4A5D45]">
-                    Email
-                  </label>
+                <label className="block text-sm font-medium text-[#4A5D45]">
+                  Email
                   <input
+                    required
                     type="email"
                     value={loginForm.email}
                     onChange={(event) =>
-                      setLoginForm((prev) => ({
-                        ...prev,
+                      setLoginForm((current) => ({
+                        ...current,
                         email: event.target.value,
                       }))
                     }
                     placeholder="nama@email.com"
-                    className="w-full rounded-xl border border-[#2C3B2E]/15 px-4 py-2.5 text-sm outline-none transition focus:border-[#C08A2E]"
+                    className="mt-2 w-full rounded-xl border border-[#2C3B2E]/15 px-4 py-2.5 text-sm outline-none transition focus:border-[#C08A2E]"
                   />
-                </div>
-                <div>
-                  <label className="mb-2 block text-xs font-medium text-[#4A5D45]">
-                    Password
-                  </label>
+                </label>
+                <label className="block text-sm font-medium text-[#4A5D45]">
+                  Password
                   <input
+                    required
                     type="password"
                     value={loginForm.password}
                     onChange={(event) =>
-                      setLoginForm((prev) => ({
-                        ...prev,
+                      setLoginForm((current) => ({
+                        ...current,
                         password: event.target.value,
                       }))
                     }
-                    placeholder="••••••••"
-                    className="w-full rounded-xl border border-[#2C3B2E]/15 px-4 py-2.5 text-sm outline-none transition focus:border-[#C08A2E]"
+                    placeholder="Password admin"
+                    className="mt-2 w-full rounded-xl border border-[#2C3B2E]/15 px-4 py-2.5 text-sm outline-none transition focus:border-[#C08A2E]"
                   />
-                </div>
+                </label>
                 {loginError ? (
                   <p className="text-sm text-amber-700">{loginError}</p>
                 ) : null}
@@ -435,469 +537,624 @@ export default function AdminPage() {
                   {loginLoading ? "Memeriksa akses..." : "Masuk"}
                 </button>
               </form>
-              <p className="mt-5 text-center text-xs text-[#4A5D45]/60">
-                Login memakai akun Supabase Auth yang sudah terdaftar sebagai
-                admin.
-              </p>
+              {!supabaseConfigured ? (
+                <p className="mt-5 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                  Konfigurasi Supabase belum lengkap.
+                </p>
+              ) : null}
             </div>
           </div>
         </div>
-      ) : (
-        <div className="flex min-h-screen flex-col md:flex-row">
-          <aside className="w-full border-b border-[#2C3B2E]/10 bg-[#EFE9DB] px-4 py-6 md:w-64 md:min-h-screen md:border-b-0 md:border-r">
-            <div className="mb-8 flex items-center gap-3 px-2">
-              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-[#C08A2E] bg-white p-0.5 shadow-sm">
-                <img
-                  src="/logo-kkn.png"
-                  alt="Logo KKN Rancamanyar"
-                  className="h-full w-full rounded-full object-contain"
-                  decoding="async"
-                  onError={(event) => {
-                    const target = event.currentTarget as HTMLImageElement;
-                    target.style.display = "none";
-                    const fallback =
-                      target.parentElement?.querySelector("span");
-                    if (fallback) {
-                      fallback.classList.remove("hidden");
-                    }
-                  }}
-                />
-                <span className="hidden font-display text-sm font-semibold text-[#2C3B2E]">
-                  KKN
-                </span>
-              </div>
-              <div>
-                <p className="font-display text-sm font-semibold leading-tight">
-                  Rancamanyar
-                </p>
-                <p className="text-xs text-[#4A5D45]">Admin Panel</p>
-              </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-[#F7F4ED] text-[#2C3B2E]">
+      <div className="flex min-h-screen flex-col md:flex-row">
+        <aside className="w-full border-b border-[#2C3B2E]/10 bg-[#EFE9DB] px-4 py-6 md:w-64 md:min-h-screen md:border-b-0 md:border-r">
+          <div className="mb-8 flex items-center gap-3 px-2">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-[#C08A2E] bg-white p-0.5 shadow-sm">
+              <img
+                src="/logo-kkn.png"
+                alt="Logo KKN Rancamanyar"
+                className="h-full w-full rounded-full object-contain"
+                decoding="async"
+              />
             </div>
+            <div>
+              <p className="font-display text-sm font-semibold leading-tight">
+                Rancamanyar
+              </p>
+              <p className="text-xs text-[#4A5D45]">Admin Panel</p>
+            </div>
+          </div>
 
-            <nav className="space-y-1">
-              {sidebarItems.map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => setActiveView(item.key)}
-                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                    activeView === item.key
-                      ? "bg-white/90 text-[#2C3B2E] font-semibold"
-                      : "text-[#4A5D45] hover:bg-white/60"
-                  }`}
-                >
-                  {item.icon}
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-
-            <button
-              onClick={handleLogout}
-              className="mt-8 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#4A5D45] transition-colors hover:bg-white/60"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+          <nav className="grid grid-cols-2 gap-1 md:block md:space-y-1">
+            {views.map((item) => (
+              <button
+                key={item.key}
+                onClick={() => setActiveView(item.key)}
+                className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
+                  activeView === item.key
+                    ? "bg-white/90 text-[#2C3B2E] font-semibold"
+                    : "text-[#4A5D45] hover:bg-white/60"
+                }`}
               >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-              Keluar
-            </button>
-          </aside>
+                {item.label}
+              </button>
+            ))}
+          </nav>
 
-          <main className="flex-1 min-h-screen">
-            <div className="flex items-center justify-between border-b border-[#2C3B2E]/10 bg-white px-6 py-4 md:px-10">
-              <div>
-                <p className="text-xs text-[#4A5D45]">Selamat datang,</p>
-                <p className="font-display font-semibold">Fadli Kamil</p>
-              </div>
+          <button
+            onClick={handleLogout}
+            className="mt-8 w-full rounded-lg px-3 py-2.5 text-left text-sm text-[#4A5D45] transition-colors hover:bg-white/60"
+          >
+            Keluar
+          </button>
+        </aside>
+
+        <section className="flex-1 min-h-screen">
+          <div className="flex flex-col gap-3 border-b border-[#2C3B2E]/10 bg-white px-6 py-4 md:flex-row md:items-center md:justify-between md:px-10">
+            <div>
+              <p className="text-xs text-[#4A5D45]">Selamat datang,</p>
+              <p className="font-display font-semibold">{authUser.email}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => void loadAll()}
+                disabled={loading}
+                className="rounded-xl border border-[#2C3B2E]/15 px-4 py-2 text-sm font-semibold text-[#2C3B2E] transition hover:border-[#2C3B2E] disabled:opacity-50"
+              >
+                {loading ? "Memuat..." : "Muat Ulang"}
+              </button>
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#EFE9DB] text-xs font-semibold">
-                FK
+                {getInitials(authUser)}
               </div>
             </div>
+          </div>
 
-            <div className="px-6 py-8 md:px-10">
-              {message ? (
-                <div className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                  {message}
-                </div>
-              ) : null}
+          <div className="px-6 py-8 md:px-10">
+            {message ? (
+              <div className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                {message}
+              </div>
+            ) : null}
 
-              {error ? (
-                <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                  {error}
-                </div>
-              ) : null}
+            {error ? (
+              <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                {error}
+              </div>
+            ) : null}
 
-              {activeView === "ringkasan" ? (
-                <div>
-                  <h2 className="mb-6 font-display text-2xl font-semibold">
-                    Ringkasan
-                  </h2>
-                  <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-                    <div className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-5">
-                      <p className="mb-1 text-xs text-[#4A5D45]">
-                        Total Catatan
-                      </p>
-                      <p className="font-display text-2xl font-semibold">
-                        {notes.length}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-5">
-                      <p className="mb-1 text-xs text-[#4A5D45]">
-                        Program Kerja
-                      </p>
-                      <p className="font-display text-2xl font-semibold">
-                        {programItems.length}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-5">
-                      <p className="mb-1 text-xs text-[#4A5D45]">Dokumentasi</p>
-                      <p className="font-display text-2xl font-semibold">
-                        {documentationItems.length}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-5">
-                      <p className="mb-1 text-xs text-[#4A5D45]">Anggota</p>
-                      <p className="font-display text-2xl font-semibold">
-                        {memberItems.length + 13}
-                      </p>
-                    </div>
-                  </div>
+            {activeView === "overview" ? (
+              <Overview records={records} />
+            ) : null}
 
-                  <div className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-6">
-                    <p className="label-eyebrow mb-4">Aktivitas Terbaru</p>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between border-b border-[#2C3B2E]/5 py-2">
-                        <div className="flex items-center gap-3">
-                          <span className="status-dot inline-block h-2 w-2 rounded-full bg-[#C08A2E]" />
-                          <p className="text-sm">
-                            Catatan kas mingguan ditambahkan
-                          </p>
-                        </div>
-                        <p className="text-xs text-[#4A5D45]/60">12 Jul</p>
-                      </div>
-                      <div className="flex items-center justify-between border-b border-[#2C3B2E]/5 py-2">
-                        <div className="flex items-center gap-3">
-                          <span className="status-dot inline-block h-2 w-2 rounded-full bg-[#4A5D45]" />
-                          <p className="text-sm">
-                            Program “Bimbingan Belajar” diubah menjadi berjalan
-                          </p>
-                        </div>
-                        <p className="text-xs text-[#4A5D45]/60">11 Jul</p>
-                      </div>
-                      <div className="flex items-center justify-between py-2">
-                        <div className="flex items-center gap-3">
-                          <span className="status-dot inline-block h-2 w-2 rounded-full bg-[#C08A2E]" />
-                          <p className="text-sm">
-                            3 foto ditambahkan ke galeri
-                          </p>
-                        </div>
-                        <p className="text-xs text-[#4A5D45]/60">10 Jul</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
+            {activeView === "notes" ? (
+              <NotesView
+                form={forms.notes}
+                records={records.notes}
+                editing={editing?.table === "notes" ? editing : null}
+                saving={saving}
+                onChange={(field, value) => updateForm("notes", field, value)}
+                onSubmit={(event) => saveRecord("notes", event)}
+                onEdit={(record) => startEdit("notes", record)}
+                onDelete={(id) => deleteRecord("notes", id)}
+                onCancel={() => resetForm("notes")}
+              />
+            ) : null}
 
-              {activeView === "pencatatan" ? (
-                <div>
-                  <div className="mb-6 flex items-center justify-between">
-                    <h2 className="font-display text-2xl font-semibold">
-                      Pencatatan
-                    </h2>
-                  </div>
+            {activeView === "programs" ? (
+              <ProgramsView
+                form={forms.programs}
+                records={records.programs}
+                editing={editing?.table === "programs" ? editing : null}
+                saving={saving}
+                onChange={(field, value) => updateForm("programs", field, value)}
+                onSubmit={(event) => saveRecord("programs", event)}
+                onEdit={(record) => startEdit("programs", record)}
+                onDelete={(id) => deleteRecord("programs", id)}
+                onCancel={() => resetForm("programs")}
+              />
+            ) : null}
 
-                  <div className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6">
-                    <p className="label-eyebrow mb-4">Tambah Catatan Baru</p>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <label className="block text-sm font-medium text-[#4A5D45]">
-                          Kategori
-                          <select
-                            value={form.category}
-                            onChange={(event) =>
-                              setForm((prev) => ({
-                                ...prev,
-                                category: event.target.value,
-                              }))
-                            }
-                            className="mt-2 w-full rounded-xl border border-[#2C3B2E]/15 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#C08A2E]"
-                          >
-                            <option value="Kehadiran">Kehadiran</option>
-                            <option value="Keuangan">Keuangan</option>
-                            <option value="Progres Proker">
-                              Progres Proker
-                            </option>
-                            <option value="Logistik">Logistik</option>
-                            <option value="Humas">Humas</option>
-                            <option value="Konsumsi">Konsumsi</option>
-                          </select>
-                        </label>
-                        <label className="block text-sm font-medium text-[#4A5D45]">
-                          Metadata / penulis
-                          <input
-                            value={form.metadata}
-                            onChange={(event) =>
-                              setForm((prev) => ({
-                                ...prev,
-                                metadata: event.target.value,
-                              }))
-                            }
-                            placeholder="Contoh: 20 Juli 2026 · oleh Cipa"
-                            className="mt-2 w-full rounded-xl border border-[#2C3B2E]/15 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#C08A2E]"
-                          />
-                        </label>
-                      </div>
-                      <label className="block text-sm font-medium text-[#4A5D45]">
-                        Judul
-                        <input
-                          required
-                          value={form.title}
-                          onChange={(event) =>
-                            setForm((prev) => ({
-                              ...prev,
-                              title: event.target.value,
-                            }))
-                          }
-                          placeholder="Contoh: Rekap Kas Minggu 2"
-                          className="mt-2 w-full rounded-xl border border-[#2C3B2E]/15 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#C08A2E]"
-                        />
-                      </label>
-                      <label className="block text-sm font-medium text-[#4A5D45]">
-                        Catatan
-                        <textarea
-                          required
-                          value={form.description}
-                          onChange={(event) =>
-                            setForm((prev) => ({
-                              ...prev,
-                              description: event.target.value,
-                            }))
-                          }
-                          rows={4}
-                          placeholder="Tulis rincian catatan di sini..."
-                          className="mt-2 w-full resize-none rounded-xl border border-[#2C3B2E]/15 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#C08A2E]"
-                        />
-                      </label>
-                      <button
-                        type="submit"
-                        disabled={submitting || !supabaseConfigured}
-                        className="rounded-xl bg-[#C08A2E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a8791f] disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {submitting ? "Menyimpan..." : "Simpan Catatan"}
-                      </button>
-                    </form>
-                  </div>
+            {activeView === "activities" ? (
+              <ActivitiesView
+                form={forms.activities}
+                records={records.activities}
+                editing={editing?.table === "activities" ? editing : null}
+                saving={saving}
+                onChange={(field, value) => updateForm("activities", field, value)}
+                onSubmit={(event) => saveRecord("activities", event)}
+                onEdit={(record) => startEdit("activities", record)}
+                onDelete={(id) => deleteRecord("activities", id)}
+                onCancel={() => resetForm("activities")}
+              />
+            ) : null}
 
-                  <div className="overflow-hidden rounded-2xl border border-[#2C3B2E]/10 bg-white">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-[#2C3B2E]/10 text-left text-xs text-[#4A5D45]">
-                          <th className="px-6 py-3 font-medium">Kategori</th>
-                          <th className="px-6 py-3 font-medium">Judul</th>
-                          <th className="px-6 py-3 font-medium">Tanggal</th>
-                          <th className="px-6 py-3 font-medium">Oleh</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {loading ? (
-                          <tr>
-                            <td
-                              colSpan={4}
-                              className="px-6 py-6 text-[#4A5D45]"
-                            >
-                              Memuat catatan...
-                            </td>
-                          </tr>
-                        ) : notes.length === 0 ? (
-                          <tr>
-                            <td
-                              colSpan={4}
-                              className="px-6 py-6 text-[#4A5D45]"
-                            >
-                              Belum ada catatan.
-                            </td>
-                          </tr>
-                        ) : (
-                          notes.map((note) => (
-                            <tr
-                              key={note.id}
-                              className="border-b border-[#2C3B2E]/5"
-                            >
-                              <td className="px-6 py-3">
-                                <span className="rounded-full bg-[#4A5D45]/10 px-2 py-1 text-xs text-[#4A5D45]">
-                                  {note.category}
-                                </span>
-                              </td>
-                              <td className="px-6 py-3">{note.title}</td>
-                              <td className="px-6 py-3 text-[#4A5D45]">
-                                {note.created_at?.slice(0, 10) ?? "Baru"}
-                              </td>
-                              <td className="px-6 py-3 text-[#4A5D45]">
-                                {note.metadata ?? "Admin"}
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              ) : null}
+            {activeView === "gallery" ? (
+              <GalleryView
+                form={forms.gallery}
+                records={records.gallery}
+                editing={editing?.table === "gallery" ? editing : null}
+                saving={saving}
+                onChange={(field, value) => updateForm("gallery", field, value)}
+                onSubmit={(event) => saveRecord("gallery", event)}
+                onEdit={(record) => startEdit("gallery", record)}
+                onDelete={(id) => deleteRecord("gallery", id)}
+                onCancel={() => resetForm("gallery")}
+              />
+            ) : null}
 
-              {activeView === "program" ? (
-                <div>
-                  <div className="mb-6 flex items-center justify-between">
-                    <h2 className="font-display text-2xl font-semibold">
-                      Program Kerja
-                    </h2>
-                    <button className="rounded-xl bg-[#2C3B2E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3d5138]">
-                      + Tambah Program
-                    </button>
-                  </div>
-                  <div className="overflow-hidden rounded-2xl border border-[#2C3B2E]/10 bg-white">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-[#2C3B2E]/10 text-left text-xs text-[#4A5D45]">
-                          <th className="px-6 py-3 font-medium">Program</th>
-                          <th className="px-6 py-3 font-medium">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {programItems.map((item) => (
-                          <tr
-                            key={item.title}
-                            className="border-b border-[#2C3B2E]/5"
-                          >
-                            <td className="px-6 py-3">{item.title}</td>
-                            <td className="px-6 py-3">
-                              <span className="rounded-full bg-[#4A5D45]/10 px-2 py-1 text-xs text-[#4A5D45]">
-                                {item.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              ) : null}
+            {activeView === "members" ? (
+              <MembersView
+                form={forms.members}
+                records={records.members}
+                editing={editing?.table === "members" ? editing : null}
+                saving={saving}
+                onChange={(field, value) => updateForm("members", field, value)}
+                onSubmit={(event) => saveRecord("members", event)}
+                onEdit={(record) => startEdit("members", record)}
+                onDelete={(id) => deleteRecord("members", id)}
+                onCancel={() => resetForm("members")}
+              />
+            ) : null}
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
 
-              {activeView === "dokumentasi" ? (
-                <div>
-                  <div className="mb-6 flex items-center justify-between">
-                    <h2 className="font-display text-2xl font-semibold">
-                      Dokumentasi Kegiatan
-                    </h2>
-                    <button className="rounded-xl bg-[#2C3B2E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3d5138]">
-                      + Tambah Kegiatan
-                    </button>
-                  </div>
-                  <div className="space-y-4">
-                    {documentationItems.map((item) => (
-                      <div
-                        key={item.title}
-                        className="flex items-center justify-between rounded-2xl border border-[#2C3B2E]/10 bg-white p-5"
-                      >
-                        <div>
-                          <p className="mb-1 text-xs font-semibold text-[#C08A2E]">
-                            {item.date}
-                          </p>
-                          <p className="font-display font-semibold">
-                            {item.title}
-                          </p>
-                        </div>
-                        <button className="text-xs font-semibold text-[#C08A2E]">
-                          Edit
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
+function Overview({ records }: { records: RecordsState }) {
+  const cards = [
+    { label: "Catatan", value: records.notes.length },
+    { label: "Program Kerja", value: records.programs.length },
+    { label: "Dokumentasi", value: records.activities.length },
+    { label: "Foto Galeri", value: records.gallery.length },
+    { label: "Anggota", value: records.members.length },
+  ];
 
-              {activeView === "galeri" ? (
-                <div>
-                  <div className="mb-6 flex items-center justify-between">
-                    <h2 className="font-display text-2xl font-semibold">
-                      Galeri
-                    </h2>
-                    <button className="rounded-xl bg-[#2C3B2E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3d5138]">
-                      + Unggah Foto
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                    {[1, 2, 3].map((item) => (
-                      <div
-                        key={item}
-                        className="relative aspect-square rounded-xl border border-[#2C3B2E]/10 bg-[#EFE9DB]"
-                      >
-                        <button className="absolute right-2 top-2 h-6 w-6 rounded-full bg-white/90 text-xs">
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                    <div className="flex aspect-square items-center justify-center rounded-xl border-2 border-dashed border-[#2C3B2E]/20 text-xs text-[#4A5D45]">
-                      + Tambah
-                    </div>
-                  </div>
-                </div>
-              ) : null}
+  return (
+    <div>
+      <h2 className="mb-6 font-display text-2xl font-semibold">Ringkasan</h2>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+        {cards.map((card) => (
+          <div
+            key={card.label}
+            className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-5"
+          >
+            <p className="mb-1 text-xs text-[#4A5D45]">{card.label}</p>
+            <p className="font-display text-2xl font-semibold">{card.value}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-8 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 text-sm leading-relaxed text-[#4A5D45]">
+        Semua angka di atas dibaca langsung dari Supabase. Setelah mengubah data,
+        gunakan tombol muat ulang jika halaman publik masih menampilkan data lama.
+      </div>
+    </div>
+  );
+}
 
-              {activeView === "anggota" ? (
-                <div>
-                  <div className="mb-6 flex items-center justify-between">
-                    <h2 className="font-display text-2xl font-semibold">
-                      Profil Anggota
-                    </h2>
-                    <button className="rounded-xl bg-[#2C3B2E] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#3d5138]">
-                      + Tambah Anggota
-                    </button>
-                  </div>
-                  <div className="overflow-hidden rounded-2xl border border-[#2C3B2E]/10 bg-white">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-[#2C3B2E]/10 text-left text-xs text-[#4A5D45]">
-                          <th className="px-6 py-3 font-medium">Nama</th>
-                          <th className="px-6 py-3 font-medium">
-                            Jabatan / Divisi
-                          </th>
-                          <th className="px-6 py-3 font-medium">Prodi</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {memberItems.map((member) => (
-                          <tr
-                            key={member.name}
-                            className="border-b border-[#2C3B2E]/5"
-                          >
-                            <td className="px-6 py-3 font-medium">
-                              {member.name}
-                            </td>
-                            <td className="px-6 py-3 text-[#4A5D45]">
-                              {member.role}
-                            </td>
-                            <td className="px-6 py-3 text-[#4A5D45]/60">
-                              {member.prodi}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </main>
+type CommonViewProps<TRecord, TForm> = {
+  form: TForm;
+  records: TRecord[];
+  editing: EditingState;
+  saving: boolean;
+  onChange: (field: string, value: string) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onEdit: (record: TRecord) => void;
+  onDelete: (id: string) => void;
+  onCancel: () => void;
+};
+
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block text-sm font-medium text-[#4A5D45]">
+      {label}
+      {children}
+    </label>
+  );
+}
+
+const inputClass =
+  "mt-2 w-full rounded-xl border border-[#2C3B2E]/15 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#C08A2E]";
+
+function FormActions({
+  editing,
+  saving,
+  onCancel,
+}: {
+  editing: EditingState;
+  saving: boolean;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-3">
+      <button
+        type="submit"
+        disabled={saving}
+        className="rounded-xl bg-[#C08A2E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a8791f] disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {saving ? "Menyimpan..." : editing ? "Simpan Perubahan" : "Tambah Data"}
+      </button>
+      {editing ? (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-xl border border-[#2C3B2E]/15 px-5 py-2.5 text-sm font-semibold text-[#2C3B2E] transition hover:border-[#2C3B2E]"
+        >
+          Batal Edit
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+function RowActions<TRecord extends { id: string }>({
+  record,
+  onEdit,
+  onDelete,
+}: {
+  record: TRecord;
+  onEdit: (record: TRecord) => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <div className="flex justify-end gap-2">
+      <button
+        type="button"
+        onClick={() => onEdit(record)}
+        className="rounded-lg border border-[#2C3B2E]/15 px-3 py-1.5 text-xs font-semibold text-[#2C3B2E] hover:border-[#2C3B2E]"
+      >
+        Edit
+      </button>
+      <button
+        type="button"
+        onClick={() => onDelete(record.id)}
+        className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:border-red-400"
+      >
+        Hapus
+      </button>
+    </div>
+  );
+}
+
+function EmptyTable({ label }: { label: string }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-[#2C3B2E]/20 bg-white/60 p-6 text-sm text-[#4A5D45]">
+      {label} belum ada.
+    </div>
+  );
+}
+
+function NotesView({
+  form,
+  records,
+  editing,
+  saving,
+  onChange,
+  onSubmit,
+  onEdit,
+  onDelete,
+  onCancel,
+}: CommonViewProps<NoteRecord, FormState["notes"]>) {
+  return (
+    <Section title="Pencatatan" subtitle="Kelola catatan yang tampil di papan pencatatan website.">
+      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Kategori">
+            <select
+              value={form.category}
+              onChange={(event) => onChange("category", event.target.value)}
+              className={inputClass}
+            >
+              <option value="Kehadiran">Kehadiran</option>
+              <option value="Keuangan">Keuangan</option>
+              <option value="Progres Proker">Progres Proker</option>
+              <option value="Logistik">Logistik</option>
+              <option value="Humas">Humas</option>
+              <option value="Konsumsi">Konsumsi</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </Field>
+          <Field label="Metadata / Penulis">
+            <input
+              value={form.metadata}
+              onChange={(event) => onChange("metadata", event.target.value)}
+              className={inputClass}
+              placeholder="Contoh: 20 Juli 2026 oleh Cipa"
+            />
+          </Field>
+        </div>
+        <Field label="Judul">
+          <input
+            required
+            value={form.title}
+            onChange={(event) => onChange("title", event.target.value)}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Catatan">
+          <textarea
+            required
+            value={form.description}
+            onChange={(event) => onChange("description", event.target.value)}
+            rows={4}
+            className={`${inputClass} resize-none`}
+          />
+        </Field>
+        <FormActions editing={editing} saving={saving} onCancel={onCancel} />
+      </form>
+
+      {records.length === 0 ? (
+        <EmptyTable label="Catatan" />
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-[#2C3B2E]/10 bg-white">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[#2C3B2E]/10 text-left text-xs text-[#4A5D45]">
+                <th className="px-6 py-3 font-medium">Kategori</th>
+                <th className="px-6 py-3 font-medium">Judul</th>
+                <th className="px-6 py-3 font-medium hidden md:table-cell">Oleh</th>
+                <th className="px-6 py-3 font-medium text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((record) => (
+                <tr key={record.id} className="border-b border-[#2C3B2E]/5 align-top">
+                  <td className="px-6 py-3 text-[#4A5D45]">{record.category}</td>
+                  <td className="px-6 py-3 font-medium">{record.title}</td>
+                  <td className="px-6 py-3 hidden md:table-cell text-[#4A5D45]">{record.metadata || "Admin"}</td>
+                  <td className="px-6 py-3"><RowActions record={record} onEdit={onEdit} onDelete={onDelete} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
-    </main>
+    </Section>
+  );
+}
+
+function ProgramsView({
+  form,
+  records,
+  editing,
+  saving,
+  onChange,
+  onSubmit,
+  onEdit,
+  onDelete,
+  onCancel,
+}: CommonViewProps<ProgramRecord, FormState["programs"]>) {
+  return (
+    <Section title="Program Kerja" subtitle="Kelola program kerja yang tampil di halaman utama.">
+      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Nama Program">
+            <input required value={form.title} onChange={(event) => onChange("title", event.target.value)} className={inputClass} />
+          </Field>
+          <Field label="Status">
+            <select value={form.status} onChange={(event) => onChange("status", event.target.value)} className={inputClass}>
+              <option value="Rencana">Rencana</option>
+              <option value="Berjalan">Berjalan</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+          </Field>
+        </div>
+        <Field label="Deskripsi">
+          <textarea value={form.description} onChange={(event) => onChange("description", event.target.value)} rows={4} className={`${inputClass} resize-none`} />
+        </Field>
+        <FormActions editing={editing} saving={saving} onCancel={onCancel} />
+      </form>
+
+      {records.length === 0 ? (
+        <EmptyTable label="Program kerja" />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {records.map((record) => (
+            <div key={record.id} className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-5">
+              <div className="mb-3 flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold text-[#C08A2E]">{record.status}</p>
+                  <h3 className="font-display text-lg font-semibold">{record.title}</h3>
+                </div>
+                <RowActions record={record} onEdit={onEdit} onDelete={onDelete} />
+              </div>
+              <p className="text-sm leading-relaxed text-[#4A5D45]">{record.description || "Belum ada deskripsi."}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+}
+
+function ActivitiesView({
+  form,
+  records,
+  editing,
+  saving,
+  onChange,
+  onSubmit,
+  onEdit,
+  onDelete,
+  onCancel,
+}: CommonViewProps<ActivityRecord, FormState["activities"]>) {
+  return (
+    <Section title="Dokumentasi" subtitle="Kelola cerita kegiatan dan tanggal pelaksanaannya.">
+      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Judul Kegiatan">
+            <input required value={form.title} onChange={(event) => onChange("title", event.target.value)} className={inputClass} />
+          </Field>
+          <Field label="Tanggal">
+            <input type="date" value={form.activity_date} onChange={(event) => onChange("activity_date", event.target.value)} className={inputClass} />
+          </Field>
+        </div>
+        <Field label="Deskripsi">
+          <textarea value={form.description} onChange={(event) => onChange("description", event.target.value)} rows={4} className={`${inputClass} resize-none`} />
+        </Field>
+        <FormActions editing={editing} saving={saving} onCancel={onCancel} />
+      </form>
+
+      {records.length === 0 ? (
+        <EmptyTable label="Dokumentasi" />
+      ) : (
+        <div className="space-y-4">
+          {records.map((record) => (
+            <div key={record.id} className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-5">
+              <div className="mb-3 flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold text-[#C08A2E]">{formatDate(record.activity_date)}</p>
+                  <h3 className="font-display text-lg font-semibold">{record.title}</h3>
+                </div>
+                <RowActions record={record} onEdit={onEdit} onDelete={onDelete} />
+              </div>
+              <p className="text-sm leading-relaxed text-[#4A5D45]">{record.description || "Belum ada deskripsi."}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+}
+
+function GalleryView({
+  form,
+  records,
+  editing,
+  saving,
+  onChange,
+  onSubmit,
+  onEdit,
+  onDelete,
+  onCancel,
+}: CommonViewProps<GalleryRecord, FormState["gallery"]>) {
+  return (
+    <Section title="Galeri" subtitle="Tambahkan URL foto dari Supabase Storage, Drive publik, atau hosting gambar lain.">
+      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Judul Foto">
+            <input value={form.title} onChange={(event) => onChange("title", event.target.value)} className={inputClass} />
+          </Field>
+          <Field label="URL Gambar">
+            <input required type="url" value={form.image_url} onChange={(event) => onChange("image_url", event.target.value)} className={inputClass} placeholder="https://..." />
+          </Field>
+        </div>
+        {form.image_url ? (
+          <img src={form.image_url} alt="Pratinjau foto" className="h-32 w-32 rounded-xl object-cover border border-[#2C3B2E]/10" />
+        ) : null}
+        <FormActions editing={editing} saving={saving} onCancel={onCancel} />
+      </form>
+
+      {records.length === 0 ? (
+        <EmptyTable label="Foto" />
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {records.map((record) => (
+            <div key={record.id} className="overflow-hidden rounded-2xl border border-[#2C3B2E]/10 bg-white">
+              {record.image_url ? (
+                <img src={record.image_url} alt={record.title || "Foto galeri"} className="aspect-square w-full object-cover" />
+              ) : null}
+              <div className="p-4">
+                <p className="mb-3 text-sm font-semibold">{record.title || "Tanpa judul"}</p>
+                <RowActions record={record} onEdit={onEdit} onDelete={onDelete} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+}
+
+function MembersView({
+  form,
+  records,
+  editing,
+  saving,
+  onChange,
+  onSubmit,
+  onEdit,
+  onDelete,
+  onCancel,
+}: CommonViewProps<MemberRecord, FormState["members"]>) {
+  return (
+    <Section title="Anggota" subtitle="Kelola nama, jabatan, divisi, dan program studi anggota KKN.">
+      <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
+        <div className="grid gap-4 md:grid-cols-2">
+          <Field label="Nama">
+            <input required value={form.name} onChange={(event) => onChange("name", event.target.value)} className={inputClass} />
+          </Field>
+          <Field label="Jabatan">
+            <input value={form.role} onChange={(event) => onChange("role", event.target.value)} className={inputClass} placeholder="Ketua, Sekretaris, Anggota" />
+          </Field>
+          <Field label="Divisi">
+            <input value={form.division} onChange={(event) => onChange("division", event.target.value)} className={inputClass} placeholder="Divisi Acara" />
+          </Field>
+          <Field label="Program Studi">
+            <input value={form.study_program} onChange={(event) => onChange("study_program", event.target.value)} className={inputClass} />
+          </Field>
+        </div>
+        <FormActions editing={editing} saving={saving} onCancel={onCancel} />
+      </form>
+
+      {records.length === 0 ? (
+        <EmptyTable label="Anggota" />
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-[#2C3B2E]/10 bg-white">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[#2C3B2E]/10 text-left text-xs text-[#4A5D45]">
+                <th className="px-6 py-3 font-medium">Nama</th>
+                <th className="px-6 py-3 font-medium hidden md:table-cell">Jabatan</th>
+                <th className="px-6 py-3 font-medium hidden md:table-cell">Divisi</th>
+                <th className="px-6 py-3 font-medium text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((record) => (
+                <tr key={record.id} className="border-b border-[#2C3B2E]/5 align-top">
+                  <td className="px-6 py-3 font-medium">{record.name}</td>
+                  <td className="px-6 py-3 hidden md:table-cell text-[#4A5D45]">{record.role || "Anggota"}</td>
+                  <td className="px-6 py-3 hidden md:table-cell text-[#4A5D45]">{record.division || "-"}</td>
+                  <td className="px-6 py-3"><RowActions record={record} onEdit={onEdit} onDelete={onDelete} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Section>
+  );
+}
+
+function Section({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="mb-6">
+        <h2 className="font-display text-2xl font-semibold">{title}</h2>
+        <p className="mt-1 text-sm text-[#4A5D45]">{subtitle}</p>
+      </div>
+      {children}
+    </div>
   );
 }
