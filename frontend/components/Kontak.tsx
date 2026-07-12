@@ -17,7 +17,14 @@ export default function Kontak() {
               <span className="w-8 h-8 rounded-full bg-[#EFE9DB] flex items-center justify-center text-[#C08A2E]">
                 @
               </span>
-              <span>instagram.com/kkn8rancamanyar</span>
+              <a
+                href="https://www.instagram.com/kkn8rancamanyar"
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium underline-offset-4 transition hover:text-[#C08A2E] hover:underline"
+              >
+                instagram.com/kkn8rancamanyar
+              </a>
             </div>
             <div className="flex items-center gap-3">
               <span className="w-8 h-8 rounded-full bg-[#EFE9DB] flex items-center justify-center text-[#C08A2E]">
