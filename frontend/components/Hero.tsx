@@ -1,0 +1,75 @@
+export default function Hero() {
+  return (
+    <section className="relative pt-40 pb-28 px-6 mountain-texture overflow-hidden">
+      {/* arc decoration mirroring logo */}
+      <svg
+        className="absolute top-16 left-1/2 -translate-x-1/2 w-[640px] max-w-[90vw] opacity-70"
+        height="140"
+        viewBox="0 0 640 140"
+        fill="none"
+      >
+        <path
+          d="M20 130 A 300 300 0 0 1 300 20"
+          stroke="#C08A2E"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M340 20 A 300 300 0 0 1 620 130"
+          stroke="#C08A2E"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+      </svg>
+
+      <div className="max-w-3xl mx-auto text-center relative z-10">
+        <p className="label-eyebrow mb-5">Desa Rancamanyar &middot; 2026</p>
+        <h1 className="font-display text-5xl md:text-6xl font-semibold leading-[1.1] mb-6">
+          Belajar, Berkarya,
+          <br />
+          Mengabdi Bersama
+        </h1>
+        <p className="text-[#4A5D45] text-lg leading-relaxed max-w-xl mx-auto mb-10">
+          Kelompok Kuliah Kerja Nyata Rancamanyar hadir untuk tumbuh bersama
+          masyarakat — mencatat setiap langkah pengabdian, dari rencana
+          hingga cerita di lapangan.
+        </p>
+        <div className="flex items-center justify-center gap-4 mb-16">
+          <a
+            href="#program"
+            className="px-6 py-3 rounded-full bg-[#2C3B2E] text-[#F7F4ED] text-sm font-semibold hover:bg-[#3d5138] transition-colors"
+          >
+            Lihat Program Kerja
+          </a>
+          <a
+            href="#dokumentasi"
+            className="px-6 py-3 rounded-full border border-[#2C3B2E]/30 text-sm font-semibold text-[#2C3B2E] hover:border-[#2C3B2E] transition-colors"
+          >
+            Dokumentasi Kegiatan
+          </a>
+        </div>
+
+        <div className="grid grid-cols-3 max-w-md mx-auto gap-6 pt-8 border-t border-[#2C3B2E]/10">
+          <div>
+            <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
+              17
+            </p>
+            <p className="text-xs text-[#4A5D45] mt-1">Anggota Tim</p>
+          </div>
+          <div>
+            <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
+              8
+            </p>
+            <p className="text-xs text-[#4A5D45] mt-1">Program Kerja</p>
+          </div>
+          <div>
+            <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
+              45
+            </p>
+            <p className="text-xs text-[#4A5D45] mt-1">Hari Pengabdian</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

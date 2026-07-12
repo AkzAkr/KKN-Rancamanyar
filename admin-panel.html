@@ -1,0 +1,1462 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel — KKN Rancamanyar</title>
+    <style>
+      *,
+      :after,
+      :before {
+        --tw-border-spacing-x: 0;
+        --tw-border-spacing-y: 0;
+        --tw-translate-x: 0;
+        --tw-translate-y: 0;
+        --tw-rotate: 0;
+        --tw-skew-x: 0;
+        --tw-skew-y: 0;
+        --tw-scale-x: 1;
+        --tw-scale-y: 1;
+        --tw-pan-x: ;
+        --tw-pan-y: ;
+        --tw-pinch-zoom: ;
+        --tw-scroll-snap-strictness: proximity;
+        --tw-gradient-from-position: ;
+        --tw-gradient-via-position: ;
+        --tw-gradient-to-position: ;
+        --tw-ordinal: ;
+        --tw-slashed-zero: ;
+        --tw-numeric-figure: ;
+        --tw-numeric-spacing: ;
+        --tw-numeric-fraction: ;
+        --tw-ring-inset: ;
+        --tw-ring-offset-width: 0px;
+        --tw-ring-offset-color: #fff;
+        --tw-ring-color: rgba(59, 130, 246, 0.5);
+        --tw-ring-offset-shadow: 0 0 #0000;
+        --tw-ring-shadow: 0 0 #0000;
+        --tw-shadow: 0 0 #0000;
+        --tw-shadow-colored: 0 0 #0000;
+        --tw-blur: ;
+        --tw-brightness: ;
+        --tw-contrast: ;
+        --tw-grayscale: ;
+        --tw-hue-rotate: ;
+        --tw-invert: ;
+        --tw-saturate: ;
+        --tw-sepia: ;
+        --tw-drop-shadow: ;
+        --tw-backdrop-blur: ;
+        --tw-backdrop-brightness: ;
+        --tw-backdrop-contrast: ;
+        --tw-backdrop-grayscale: ;
+        --tw-backdrop-hue-rotate: ;
+        --tw-backdrop-invert: ;
+        --tw-backdrop-opacity: ;
+        --tw-backdrop-saturate: ;
+        --tw-backdrop-sepia: ;
+        --tw-contain-size: ;
+        --tw-contain-layout: ;
+        --tw-contain-paint: ;
+        --tw-contain-style: ;
+      }
+      ::backdrop {
+        --tw-border-spacing-x: 0;
+        --tw-border-spacing-y: 0;
+        --tw-translate-x: 0;
+        --tw-translate-y: 0;
+        --tw-rotate: 0;
+        --tw-skew-x: 0;
+        --tw-skew-y: 0;
+        --tw-scale-x: 1;
+        --tw-scale-y: 1;
+        --tw-pan-x: ;
+        --tw-pan-y: ;
+        --tw-pinch-zoom: ;
+        --tw-scroll-snap-strictness: proximity;
+        --tw-gradient-from-position: ;
+        --tw-gradient-via-position: ;
+        --tw-gradient-to-position: ;
+        --tw-ordinal: ;
+        --tw-slashed-zero: ;
+        --tw-numeric-figure: ;
+        --tw-numeric-spacing: ;
+        --tw-numeric-fraction: ;
+        --tw-ring-inset: ;
+        --tw-ring-offset-width: 0px;
+        --tw-ring-offset-color: #fff;
+        --tw-ring-color: rgba(59, 130, 246, 0.5);
+        --tw-ring-offset-shadow: 0 0 #0000;
+        --tw-ring-shadow: 0 0 #0000;
+        --tw-shadow: 0 0 #0000;
+        --tw-shadow-colored: 0 0 #0000;
+        --tw-blur: ;
+        --tw-brightness: ;
+        --tw-contrast: ;
+        --tw-grayscale: ;
+        --tw-hue-rotate: ;
+        --tw-invert: ;
+        --tw-saturate: ;
+        --tw-sepia: ;
+        --tw-drop-shadow: ;
+        --tw-backdrop-blur: ;
+        --tw-backdrop-brightness: ;
+        --tw-backdrop-contrast: ;
+        --tw-backdrop-grayscale: ;
+        --tw-backdrop-hue-rotate: ;
+        --tw-backdrop-invert: ;
+        --tw-backdrop-opacity: ;
+        --tw-backdrop-saturate: ;
+        --tw-backdrop-sepia: ;
+        --tw-contain-size: ;
+        --tw-contain-layout: ;
+        --tw-contain-paint: ;
+        --tw-contain-style: ;
+      } /*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/
+      *,
+      :after,
+      :before {
+        box-sizing: border-box;
+        border: 0 solid #e5e7eb;
+      }
+      :after,
+      :before {
+        --tw-content: "";
+      }
+      :host,
+      html {
+        line-height: 1.5;
+        -webkit-text-size-adjust: 100%;
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          sans-serif,
+          Apple Color Emoji,
+          Segoe UI Emoji,
+          Segoe UI Symbol,
+          Noto Color Emoji;
+        font-feature-settings: normal;
+        font-variation-settings: normal;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        margin: 0;
+        line-height: inherit;
+      }
+      hr {
+        height: 0;
+        color: inherit;
+        border-top-width: 1px;
+      }
+      abbr:where([title]) {
+        -webkit-text-decoration: underline dotted;
+        text-decoration: underline dotted;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-size: inherit;
+        font-weight: inherit;
+      }
+      a {
+        color: inherit;
+        text-decoration: inherit;
+      }
+      b,
+      strong {
+        font-weight: bolder;
+      }
+      code,
+      kbd,
+      pre,
+      samp {
+        font-family:
+          ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Monaco,
+          Consolas,
+          Liberation Mono,
+          Courier New,
+          monospace;
+        font-feature-settings: normal;
+        font-variation-settings: normal;
+        font-size: 1em;
+      }
+      small {
+        font-size: 80%;
+      }
+      sub,
+      sup {
+        font-size: 75%;
+        line-height: 0;
+        position: relative;
+        vertical-align: baseline;
+      }
+      sub {
+        bottom: -0.25em;
+      }
+      sup {
+        top: -0.5em;
+      }
+      table {
+        text-indent: 0;
+        border-color: inherit;
+        border-collapse: collapse;
+      }
+      button,
+      input,
+      optgroup,
+      select,
+      textarea {
+        font-family: inherit;
+        font-feature-settings: inherit;
+        font-variation-settings: inherit;
+        font-size: 100%;
+        font-weight: inherit;
+        line-height: inherit;
+        letter-spacing: inherit;
+        color: inherit;
+        margin: 0;
+        padding: 0;
+      }
+      button,
+      select {
+        text-transform: none;
+      }
+      button,
+      input:where([type="button"]),
+      input:where([type="reset"]),
+      input:where([type="submit"]) {
+        -webkit-appearance: button;
+        background-color: transparent;
+        background-image: none;
+      }
+      :-moz-focusring {
+        outline: auto;
+      }
+      :-moz-ui-invalid {
+        box-shadow: none;
+      }
+      progress {
+        vertical-align: baseline;
+      }
+      ::-webkit-inner-spin-button,
+      ::-webkit-outer-spin-button {
+        height: auto;
+      }
+      [type="search"] {
+        -webkit-appearance: textfield;
+        outline-offset: -2px;
+      }
+      ::-webkit-search-decoration {
+        -webkit-appearance: none;
+      }
+      ::-webkit-file-upload-button {
+        -webkit-appearance: button;
+        font: inherit;
+      }
+      summary {
+        display: list-item;
+      }
+      blockquote,
+      dd,
+      dl,
+      figure,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      hr,
+      p,
+      pre {
+        margin: 0;
+      }
+      fieldset {
+        margin: 0;
+      }
+      fieldset,
+      legend {
+        padding: 0;
+      }
+      menu,
+      ol,
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      dialog {
+        padding: 0;
+      }
+      textarea {
+        resize: vertical;
+      }
+      input::-moz-placeholder,
+      textarea::-moz-placeholder {
+        opacity: 1;
+        color: #9ca3af;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        opacity: 1;
+        color: #9ca3af;
+      }
+      [role="button"],
+      button {
+        cursor: pointer;
+      }
+      :disabled {
+        cursor: default;
+      }
+      audio,
+      canvas,
+      embed,
+      iframe,
+      img,
+      object,
+      svg,
+      video {
+        display: block;
+        vertical-align: middle;
+      }
+      img,
+      video {
+        max-width: 100%;
+        height: auto;
+      }
+      [hidden]:where(:not([hidden="until-found"])) {
+        display: none;
+      }
+      .absolute {
+        position: absolute;
+      }
+      .relative {
+        position: relative;
+      }
+      .right-2 {
+        right: 0.5rem;
+      }
+      .top-2 {
+        top: 0.5rem;
+      }
+      .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .mb-1 {
+        margin-bottom: 0.25rem;
+      }
+      .mb-2 {
+        margin-bottom: 0.5rem;
+      }
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+      .mb-5 {
+        margin-bottom: 1.25rem;
+      }
+      .mb-6 {
+        margin-bottom: 1.5rem;
+      }
+      .mb-8 {
+        margin-bottom: 2rem;
+      }
+      .mt-5 {
+        margin-top: 1.25rem;
+      }
+      .mt-8 {
+        margin-top: 2rem;
+      }
+      .block {
+        display: block;
+      }
+      .flex {
+        display: flex;
+      }
+      .table {
+        display: table;
+      }
+      .grid {
+        display: grid;
+      }
+      .hidden {
+        display: none;
+      }
+      .aspect-square {
+        aspect-ratio: 1/1;
+      }
+      .h-12 {
+        height: 3rem;
+      }
+      .h-6 {
+        height: 1.5rem;
+      }
+      .h-9 {
+        height: 2.25rem;
+      }
+      .min-h-screen {
+        min-height: 100vh;
+      }
+      .w-12 {
+        width: 3rem;
+      }
+      .w-6 {
+        width: 1.5rem;
+      }
+      .w-64 {
+        width: 16rem;
+      }
+      .w-9 {
+        width: 2.25rem;
+      }
+      .w-full {
+        width: 100%;
+      }
+      .max-w-sm {
+        max-width: 24rem;
+      }
+      .flex-1 {
+        flex: 1 1 0%;
+      }
+      .resize-none {
+        resize: none;
+      }
+      .grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .items-center {
+        align-items: center;
+      }
+      .justify-center {
+        justify-content: center;
+      }
+      .justify-between {
+        justify-content: space-between;
+      }
+      .gap-3 {
+        gap: 0.75rem;
+      }
+      .gap-4 {
+        gap: 1rem;
+      }
+      .space-y-1 > :not([hidden]) ~ :not([hidden]) {
+        --tw-space-y-reverse: 0;
+        margin-top: calc(0.25rem * (1 - var(--tw-space-y-reverse)));
+        margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
+      }
+      .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+        --tw-space-y-reverse: 0;
+        margin-top: calc(0.75rem * (1 - var(--tw-space-y-reverse)));
+        margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
+      }
+      .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+        --tw-space-y-reverse: 0;
+        margin-top: calc(1rem * (1 - var(--tw-space-y-reverse)));
+        margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+      }
+      .overflow-hidden {
+        overflow: hidden;
+      }
+      .rounded-2xl {
+        border-radius: 1rem;
+      }
+      .rounded-full {
+        border-radius: 9999px;
+      }
+      .rounded-lg {
+        border-radius: 0.5rem;
+      }
+      .rounded-xl {
+        border-radius: 0.75rem;
+      }
+      .border {
+        border-width: 1px;
+      }
+      .border-2 {
+        border-width: 2px;
+      }
+      .border-b {
+        border-bottom-width: 1px;
+      }
+      .border-r {
+        border-right-width: 1px;
+      }
+      .border-dashed {
+        border-style: dashed;
+      }
+      .border-\[\#2C3B2E\]\/10 {
+        border-color: rgba(44, 59, 46, 0.1);
+      }
+      .border-\[\#2C3B2E\]\/15 {
+        border-color: rgba(44, 59, 46, 0.15);
+      }
+      .border-\[\#2C3B2E\]\/20 {
+        border-color: rgba(44, 59, 46, 0.2);
+      }
+      .border-\[\#2C3B2E\]\/5 {
+        border-color: rgba(44, 59, 46, 0.05);
+      }
+      .border-\[\#C08A2E\] {
+        --tw-border-opacity: 1;
+        border-color: rgb(192 138 46 / var(--tw-border-opacity, 1));
+      }
+      .bg-\[\#2C3B2E\] {
+        --tw-bg-opacity: 1;
+        background-color: rgb(44 59 46 / var(--tw-bg-opacity, 1));
+      }
+      .bg-\[\#2C3B2E\]\/10 {
+        background-color: rgba(44, 59, 46, 0.1);
+      }
+      .bg-\[\#4A5D45\] {
+        --tw-bg-opacity: 1;
+        background-color: rgb(74 93 69 / var(--tw-bg-opacity, 1));
+      }
+      .bg-\[\#4A5D45\]\/10 {
+        background-color: rgba(74, 93, 69, 0.1);
+      }
+      .bg-\[\#C08A2E\] {
+        --tw-bg-opacity: 1;
+        background-color: rgb(192 138 46 / var(--tw-bg-opacity, 1));
+      }
+      .bg-\[\#C08A2E\]\/15 {
+        background-color: rgba(192, 138, 46, 0.15);
+      }
+      .bg-\[\#EFE9DB\] {
+        --tw-bg-opacity: 1;
+        background-color: rgb(239 233 219 / var(--tw-bg-opacity, 1));
+      }
+      .bg-white {
+        --tw-bg-opacity: 1;
+        background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+      }
+      .bg-white\/90 {
+        background-color: hsla(0, 0%, 100%, 0.9);
+      }
+      .p-5 {
+        padding: 1.25rem;
+      }
+      .p-6 {
+        padding: 1.5rem;
+      }
+      .p-7 {
+        padding: 1.75rem;
+      }
+      .px-2 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+      .px-3 {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+      .px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .px-5 {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+      }
+      .px-6 {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+      .py-1 {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+      }
+      .py-2 {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+      }
+      .py-2\.5 {
+        padding-top: 0.625rem;
+        padding-bottom: 0.625rem;
+      }
+      .py-3 {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+      }
+      .py-4 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+      }
+      .py-6 {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+      }
+      .py-8 {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+      }
+      .text-left {
+        text-align: left;
+      }
+      .text-center {
+        text-align: center;
+      }
+      .text-right {
+        text-align: right;
+      }
+      .text-2xl {
+        font-size: 1.5rem;
+        line-height: 2rem;
+      }
+      .text-sm {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+      }
+      .text-xs {
+        font-size: 0.75rem;
+        line-height: 1rem;
+      }
+      .font-medium {
+        font-weight: 500;
+      }
+      .font-semibold {
+        font-weight: 600;
+      }
+      .uppercase {
+        text-transform: uppercase;
+      }
+      .leading-tight {
+        line-height: 1.25;
+      }
+      .text-\[\#2C3B2E\] {
+        --tw-text-opacity: 1;
+        color: rgb(44 59 46 / var(--tw-text-opacity, 1));
+      }
+      .text-\[\#4A5D45\] {
+        --tw-text-opacity: 1;
+        color: rgb(74 93 69 / var(--tw-text-opacity, 1));
+      }
+      .text-\[\#4A5D45\]\/60 {
+        color: rgba(74, 93, 69, 0.6);
+      }
+      .text-\[\#C08A2E\] {
+        --tw-text-opacity: 1;
+        color: rgb(192 138 46 / var(--tw-text-opacity, 1));
+      }
+      .text-white {
+        --tw-text-opacity: 1;
+        color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+      }
+      .antialiased {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .shadow-sm {
+        --tw-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+        box-shadow:
+          var(--tw-ring-offset-shadow, 0 0 #0000),
+          var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+      }
+      .transition-colors {
+        transition-property:
+          color, background-color, border-color, text-decoration-color, fill,
+          stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 0.15s;
+      }
+      .hover\:bg-\[\#3d5138\]:hover {
+        --tw-bg-opacity: 1;
+        background-color: rgb(61 81 56 / var(--tw-bg-opacity, 1));
+      }
+      .hover\:bg-\[\#a8791f\]:hover {
+        --tw-bg-opacity: 1;
+        background-color: rgb(168 121 31 / var(--tw-bg-opacity, 1));
+      }
+      .hover\:bg-white\/60:hover {
+        background-color: hsla(0, 0%, 100%, 0.6);
+      }
+      .focus\:border-\[\#C08A2E\]:focus {
+        --tw-border-opacity: 1;
+        border-color: rgb(192 138 46 / var(--tw-border-opacity, 1));
+      }
+      .focus\:outline-none:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+      @media (min-width: 768px) {
+        .md\:block {
+          display: block;
+        }
+        .md\:grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .md\:grid-cols-4 {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        .md\:px-10 {
+          padding-left: 2.5rem;
+          padding-right: 2.5rem;
+        }
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #2c3b2e;
+        --ink-soft: #4a5d45;
+        --cream: #f7f4ed;
+        --cream-deep: #efe9db;
+        --gold: #c08a2e;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--cream);
+        color: var(--ink);
+      }
+      .font-display {
+        font-family: "Fraunces", serif;
+      }
+      .label-eyebrow {
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--gold);
+      }
+      .sidebar-link.active {
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .sidebar-link.active svg {
+        color: var(--gold);
+      }
+      .panel-view {
+        display: none;
+      }
+      .panel-view.active {
+        display: block;
+      }
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <!-- ============ LOGIN SCREEN ============ -->
+    <div
+      id="loginScreen"
+      class="min-h-screen flex items-center justify-center px-6"
+    >
+      <div class="w-full max-w-sm">
+        <div class="text-center mb-8">
+          <div
+            class="w-12 h-12 rounded-full border-2 border-[#C08A2E] flex items-center justify-center mx-auto mb-4"
+          >
+            <span class="font-display text-sm font-semibold">KKN</span>
+          </div>
+          <p class="label-eyebrow mb-2">Admin Panel</p>
+          <h1 class="font-display text-2xl font-semibold">KKN Rancamanyar</h1>
+        </div>
+
+        <div
+          class="bg-white rounded-2xl border border-[#2C3B2E]/10 p-7 shadow-sm"
+        >
+          <div class="mb-5">
+            <label class="block text-xs font-medium text-[#4A5D45] mb-2"
+              >Email</label
+            >
+            <input
+              type="email"
+              placeholder="nama@email.com"
+              class="w-full px-4 py-2.5 rounded-xl border border-[#2C3B2E]/15 text-sm focus:outline-none focus:border-[#C08A2E] transition-colors"
+            />
+          </div>
+          <div class="mb-6">
+            <label class="block text-xs font-medium text-[#4A5D45] mb-2"
+              >Password</label
+            >
+            <input
+              type="password"
+              placeholder="••••••••"
+              class="w-full px-4 py-2.5 rounded-xl border border-[#2C3B2E]/15 text-sm focus:outline-none focus:border-[#C08A2E] transition-colors"
+            />
+          </div>
+          <button
+            id="loginBtn"
+            class="w-full py-2.5 rounded-xl bg-[#2C3B2E] text-white text-sm font-semibold hover:bg-[#3d5138] transition-colors"
+          >
+            Masuk
+          </button>
+          <p class="text-xs text-[#4A5D45]/60 text-center mt-5">
+            Khusus Ketua &amp; Sekretaris kelompok
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ DASHBOARD ============ -->
+    <div id="dashboardScreen" class="hidden min-h-screen">
+      <div class="flex">
+        <!-- SIDEBAR -->
+        <aside
+          class="w-64 min-h-screen bg-[#EFE9DB] border-r border-[#2C3B2E]/10 px-4 py-6 hidden md:block"
+        >
+          <div class="flex items-center gap-3 px-2 mb-8">
+            <div
+              class="w-9 h-9 rounded-full border-2 border-[#C08A2E] flex items-center justify-center"
+            >
+              <span class="font-display text-sm font-semibold">KKN</span>
+            </div>
+            <div>
+              <p class="font-display font-semibold text-sm leading-tight">
+                Rancamanyar
+              </p>
+              <p class="text-xs text-[#4A5D45]">Admin Panel</p>
+            </div>
+          </div>
+
+          <nav class="space-y-1">
+            <button
+              data-target="viewRingkasan"
+              class="sidebar-link active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#4A5D45] hover:bg-white/60 transition-colors"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              Ringkasan
+            </button>
+            <button
+              data-target="viewPencatatan"
+              class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#4A5D45] hover:bg-white/60 transition-colors"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M9 2H15V6H9V2Z" />
+                <path d="M4 6H20V22H4V6Z" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+                <line x1="8" y1="16" x2="16" y2="16" />
+              </svg>
+              Pencatatan
+            </button>
+            <button
+              data-target="viewProgram"
+              class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#4A5D45] hover:bg-white/60 transition-colors"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 3" />
+              </svg>
+              Program Kerja
+            </button>
+            <button
+              data-target="viewDokumentasi"
+              class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#4A5D45] hover:bg-white/60 transition-colors"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path
+                  d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5V4.5A2.5 2.5 0 0 1 6.5 2Z"
+                />
+              </svg>
+              Dokumentasi
+            </button>
+            <button
+              data-target="viewGaleri"
+              class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#4A5D45] hover:bg-white/60 transition-colors"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <path d="M21 15l-5-5L5 21" />
+              </svg>
+              Galeri
+            </button>
+            <button
+              data-target="viewAnggota"
+              class="sidebar-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#4A5D45] hover:bg-white/60 transition-colors"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              Profil Anggota
+            </button>
+          </nav>
+
+          <button
+            id="logoutBtn"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#4A5D45] hover:bg-white/60 transition-colors mt-8"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Keluar
+          </button>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 min-h-screen">
+          <!-- topbar -->
+          <div
+            class="bg-white border-b border-[#2C3B2E]/10 px-6 md:px-10 py-4 flex items-center justify-between"
+          >
+            <div>
+              <p class="text-xs text-[#4A5D45]">Selamat datang,</p>
+              <p class="font-display font-semibold">Fadli Kamil</p>
+            </div>
+            <div
+              class="w-9 h-9 rounded-full bg-[#EFE9DB] flex items-center justify-center text-xs font-semibold"
+            >
+              FK
+            </div>
+          </div>
+
+          <div class="px-6 md:px-10 py-8">
+            <!-- ===== VIEW: RINGKASAN ===== -->
+            <div id="viewRingkasan" class="panel-view active">
+              <h2 class="font-display text-2xl font-semibold mb-6">
+                Ringkasan
+              </h2>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div
+                  class="bg-white rounded-2xl p-5 border border-[#2C3B2E]/10"
+                >
+                  <p class="text-xs text-[#4A5D45] mb-1">Total Catatan</p>
+                  <p class="font-display text-2xl font-semibold">6</p>
+                </div>
+                <div
+                  class="bg-white rounded-2xl p-5 border border-[#2C3B2E]/10"
+                >
+                  <p class="text-xs text-[#4A5D45] mb-1">Program Kerja</p>
+                  <p class="font-display text-2xl font-semibold">8</p>
+                </div>
+                <div
+                  class="bg-white rounded-2xl p-5 border border-[#2C3B2E]/10"
+                >
+                  <p class="text-xs text-[#4A5D45] mb-1">Dokumentasi</p>
+                  <p class="font-display text-2xl font-semibold">2</p>
+                </div>
+                <div
+                  class="bg-white rounded-2xl p-5 border border-[#2C3B2E]/10"
+                >
+                  <p class="text-xs text-[#4A5D45] mb-1">Anggota</p>
+                  <p class="font-display text-2xl font-semibold">17</p>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl border border-[#2C3B2E]/10 p-6">
+                <p class="label-eyebrow mb-4">Aktivitas Terbaru</p>
+                <div class="space-y-3">
+                  <div
+                    class="flex items-center justify-between py-2 border-b border-[#2C3B2E]/5"
+                  >
+                    <div class="flex items-center gap-3">
+                      <span class="status-dot bg-[#C08A2E]"></span>
+                      <p class="text-sm">Catatan kas mingguan ditambahkan</p>
+                    </div>
+                    <p class="text-xs text-[#4A5D45]/60">12 Jul</p>
+                  </div>
+                  <div
+                    class="flex items-center justify-between py-2 border-b border-[#2C3B2E]/5"
+                  >
+                    <div class="flex items-center gap-3">
+                      <span class="status-dot bg-[#4A5D45]"></span>
+                      <p class="text-sm">
+                        Program "Bimbingan Belajar" diubah jadi Berjalan
+                      </p>
+                    </div>
+                    <p class="text-xs text-[#4A5D45]/60">11 Jul</p>
+                  </div>
+                  <div class="flex items-center justify-between py-2">
+                    <div class="flex items-center gap-3">
+                      <span class="status-dot bg-[#C08A2E]"></span>
+                      <p class="text-sm">3 foto ditambahkan ke galeri</p>
+                    </div>
+                    <p class="text-xs text-[#4A5D45]/60">10 Jul</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== VIEW: PENCATATAN ===== -->
+            <div id="viewPencatatan" class="panel-view">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="font-display text-2xl font-semibold">Pencatatan</h2>
+                <button
+                  class="px-4 py-2 rounded-xl bg-[#2C3B2E] text-white text-sm font-semibold hover:bg-[#3d5138] transition-colors"
+                >
+                  + Tambah Catatan
+                </button>
+              </div>
+
+              <div
+                class="bg-white rounded-2xl border border-[#2C3B2E]/10 p-6 mb-6"
+              >
+                <p class="label-eyebrow mb-4">Tambah Catatan Baru</p>
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-xs font-medium text-[#4A5D45] mb-2"
+                      >Kategori</label
+                    >
+                    <select
+                      class="w-full px-4 py-2.5 rounded-xl border border-[#2C3B2E]/15 text-sm focus:outline-none focus:border-[#C08A2E]"
+                    >
+                      <option>Kehadiran</option>
+                      <option>Keuangan</option>
+                      <option>Progres Proker</option>
+                      <option>Logistik</option>
+                      <option>Humas</option>
+                      <option>Konsumsi</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-[#4A5D45] mb-2"
+                      >Tanggal</label
+                    >
+                    <input
+                      type="date"
+                      class="w-full px-4 py-2.5 rounded-xl border border-[#2C3B2E]/15 text-sm focus:outline-none focus:border-[#C08A2E]"
+                    />
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-xs font-medium text-[#4A5D45] mb-2"
+                    >Judul</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="Contoh: Rekap Kas Minggu 2"
+                    class="w-full px-4 py-2.5 rounded-xl border border-[#2C3B2E]/15 text-sm focus:outline-none focus:border-[#C08A2E]"
+                  />
+                </div>
+                <div class="mb-5">
+                  <label class="block text-xs font-medium text-[#4A5D45] mb-2"
+                    >Catatan</label
+                  >
+                  <textarea
+                    rows="3"
+                    placeholder="Tulis rincian catatan di sini..."
+                    class="w-full px-4 py-2.5 rounded-xl border border-[#2C3B2E]/15 text-sm focus:outline-none focus:border-[#C08A2E] resize-none"
+                  ></textarea>
+                </div>
+                <button
+                  class="px-5 py-2.5 rounded-xl bg-[#C08A2E] text-white text-sm font-semibold hover:bg-[#a8791f] transition-colors"
+                >
+                  Simpan Catatan
+                </button>
+              </div>
+
+              <div
+                class="bg-white rounded-2xl border border-[#2C3B2E]/10 overflow-hidden"
+              >
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr
+                      class="border-b border-[#2C3B2E]/10 text-left text-xs text-[#4A5D45]"
+                    >
+                      <th class="px-6 py-3 font-medium">Kategori</th>
+                      <th class="px-6 py-3 font-medium">Judul</th>
+                      <th class="px-6 py-3 font-medium">Tanggal</th>
+                      <th class="px-6 py-3 font-medium">Oleh</th>
+                      <th class="px-6 py-3 font-medium"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-[#2C3B2E]/5">
+                      <td class="px-6 py-3">
+                        <span
+                          class="px-2 py-1 rounded-full bg-[#4A5D45]/10 text-[#4A5D45] text-xs"
+                          >Keuangan</span
+                        >
+                      </td>
+                      <td class="px-6 py-3">Kas Mingguan</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">12 Jul 2026</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">Risa</td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="border-b border-[#2C3B2E]/5">
+                      <td class="px-6 py-3">
+                        <span
+                          class="px-2 py-1 rounded-full bg-[#C08A2E]/15 text-[#C08A2E] text-xs"
+                          >Kehadiran</span
+                        >
+                      </td>
+                      <td class="px-6 py-3">Rekap Minggu 1</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">12 Jul 2026</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">Cipa</td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="px-6 py-3">
+                        <span
+                          class="px-2 py-1 rounded-full bg-[#2C3B2E]/10 text-[#2C3B2E] text-xs"
+                          >Progres Proker</span
+                        >
+                      </td>
+                      <td class="px-6 py-3">Digitalisasi UMKM</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">10 Jul 2026</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">Div. Acara</td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- ===== VIEW: PROGRAM KERJA ===== -->
+            <div id="viewProgram" class="panel-view">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="font-display text-2xl font-semibold">
+                  Program Kerja
+                </h2>
+                <button
+                  class="px-4 py-2 rounded-xl bg-[#2C3B2E] text-white text-sm font-semibold hover:bg-[#3d5138] transition-colors"
+                >
+                  + Tambah Program
+                </button>
+              </div>
+              <div
+                class="bg-white rounded-2xl border border-[#2C3B2E]/10 overflow-hidden"
+              >
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr
+                      class="border-b border-[#2C3B2E]/10 text-left text-xs text-[#4A5D45]"
+                    >
+                      <th class="px-6 py-3 font-medium">Program</th>
+                      <th class="px-6 py-3 font-medium">Status</th>
+                      <th class="px-6 py-3 font-medium"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-[#2C3B2E]/5">
+                      <td class="px-6 py-3">Pelatihan Digitalisasi UMKM</td>
+                      <td class="px-6 py-3">
+                        <span
+                          class="px-2 py-1 rounded-full bg-[#4A5D45]/10 text-[#4A5D45] text-xs"
+                          >Berjalan</span
+                        >
+                      </td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="border-b border-[#2C3B2E]/5">
+                      <td class="px-6 py-3">Bimbingan Belajar Anak Desa</td>
+                      <td class="px-6 py-3">
+                        <span
+                          class="px-2 py-1 rounded-full bg-[#C08A2E]/15 text-[#C08A2E] text-xs"
+                          >Rencana</span
+                        >
+                      </td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="px-6 py-3">Pemetaan Potensi Desa</td>
+                      <td class="px-6 py-3">
+                        <span
+                          class="px-2 py-1 rounded-full bg-[#2C3B2E]/10 text-[#2C3B2E] text-xs"
+                          >Selesai</span
+                        >
+                      </td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- ===== VIEW: DOKUMENTASI ===== -->
+            <div id="viewDokumentasi" class="panel-view">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="font-display text-2xl font-semibold">
+                  Dokumentasi Kegiatan
+                </h2>
+                <button
+                  class="px-4 py-2 rounded-xl bg-[#2C3B2E] text-white text-sm font-semibold hover:bg-[#3d5138] transition-colors"
+                >
+                  + Tambah Kegiatan
+                </button>
+              </div>
+              <div class="space-y-4">
+                <div
+                  class="bg-white rounded-2xl border border-[#2C3B2E]/10 p-5 flex items-center justify-between"
+                >
+                  <div>
+                    <p class="text-xs text-[#C08A2E] font-semibold mb-1">
+                      12 Juli 2026
+                    </p>
+                    <p class="font-display font-semibold">
+                      Pembukaan Pelatihan Digitalisasi UMKM
+                    </p>
+                  </div>
+                  <button class="text-[#C08A2E] text-xs font-semibold">
+                    Edit
+                  </button>
+                </div>
+                <div
+                  class="bg-white rounded-2xl border border-[#2C3B2E]/10 p-5 flex items-center justify-between"
+                >
+                  <div>
+                    <p class="text-xs text-[#C08A2E] font-semibold mb-1">
+                      8 Juli 2026
+                    </p>
+                    <p class="font-display font-semibold">
+                      Pemetaan Potensi Desa Selesai
+                    </p>
+                  </div>
+                  <button class="text-[#C08A2E] text-xs font-semibold">
+                    Edit
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== VIEW: GALERI ===== -->
+            <div id="viewGaleri" class="panel-view">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="font-display text-2xl font-semibold">Galeri</h2>
+                <button
+                  class="px-4 py-2 rounded-xl bg-[#2C3B2E] text-white text-sm font-semibold hover:bg-[#3d5138] transition-colors"
+                >
+                  + Unggah Foto
+                </button>
+              </div>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div
+                  class="aspect-square rounded-xl bg-[#EFE9DB] border border-[#2C3B2E]/10 relative group"
+                >
+                  <button
+                    class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div
+                  class="aspect-square rounded-xl bg-[#EFE9DB] border border-[#2C3B2E]/10 relative"
+                >
+                  <button
+                    class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div
+                  class="aspect-square rounded-xl bg-[#EFE9DB] border border-[#2C3B2E]/10 relative"
+                >
+                  <button
+                    class="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div
+                  class="aspect-square rounded-xl border-2 border-dashed border-[#2C3B2E]/20 flex items-center justify-center text-[#4A5D45] text-xs"
+                >
+                  + Tambah
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== VIEW: ANGGOTA ===== -->
+            <div id="viewAnggota" class="panel-view">
+              <div class="flex items-center justify-between mb-6">
+                <h2 class="font-display text-2xl font-semibold">
+                  Profil Anggota
+                </h2>
+                <button
+                  class="px-4 py-2 rounded-xl bg-[#2C3B2E] text-white text-sm font-semibold hover:bg-[#3d5138] transition-colors"
+                >
+                  + Tambah Anggota
+                </button>
+              </div>
+              <div
+                class="bg-white rounded-2xl border border-[#2C3B2E]/10 overflow-hidden"
+              >
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr
+                      class="border-b border-[#2C3B2E]/10 text-left text-xs text-[#4A5D45]"
+                    >
+                      <th class="px-6 py-3 font-medium">Nama</th>
+                      <th class="px-6 py-3 font-medium">Jabatan / Divisi</th>
+                      <th class="px-6 py-3 font-medium">Prodi</th>
+                      <th class="px-6 py-3 font-medium"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-[#2C3B2E]/5">
+                      <td class="px-6 py-3 font-medium">Fadli Kamil</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">Ketua</td>
+                      <td class="px-6 py-3 text-[#4A5D45]/60">—</td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="border-b border-[#2C3B2E]/5">
+                      <td class="px-6 py-3 font-medium">Cipa</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">Sekretaris</td>
+                      <td class="px-6 py-3 text-[#4A5D45]/60">—</td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="border-b border-[#2C3B2E]/5">
+                      <td class="px-6 py-3 font-medium">Vera</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">Sekretaris</td>
+                      <td class="px-6 py-3 text-[#4A5D45]/60">—</td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="border-b border-[#2C3B2E]/5">
+                      <td class="px-6 py-3 font-medium">Risa</td>
+                      <td class="px-6 py-3 text-[#4A5D45]">Bendahara</td>
+                      <td class="px-6 py-3 text-[#4A5D45]/60">—</td>
+                      <td class="px-6 py-3 text-right">
+                        <button class="text-[#C08A2E] text-xs font-semibold">
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="px-6 py-3 font-medium">
+                        + 13 anggota lainnya
+                      </td>
+                      <td class="px-6 py-3 text-[#4A5D45]/60" colspan="3">
+                        Div. Acara, PDD, Logistik, Konsumsi, Humas
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const loginScreen = document.getElementById("loginScreen");
+      const dashboardScreen = document.getElementById("dashboardScreen");
+      const loginBtn = document.getElementById("loginBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      loginBtn.addEventListener("click", () => {
+        loginScreen.classList.add("hidden");
+        dashboardScreen.classList.remove("hidden");
+      });
+      logoutBtn.addEventListener("click", () => {
+        dashboardScreen.classList.add("hidden");
+        loginScreen.classList.remove("hidden");
+      });
+
+      const sidebarLinks = document.querySelectorAll(".sidebar-link");
+      const panelViews = document.querySelectorAll(".panel-view");
+      sidebarLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          sidebarLinks.forEach((l) => l.classList.remove("active"));
+          link.classList.add("active");
+          const target = link.getAttribute("data-target");
+          panelViews.forEach((v) => v.classList.remove("active"));
+          document.getElementById(target).classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>
