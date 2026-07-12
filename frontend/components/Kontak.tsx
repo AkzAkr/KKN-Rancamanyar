@@ -27,8 +27,18 @@ export default function Kontak() {
             </div>
           </div>
         </div>
-        <div className="aspect-video rounded-2xl bg-[#EFE9DB] border border-[#2C3B2E]/10 flex items-center justify-center text-sm text-[#4A5D45]">
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31681.277598329627!2d107.57207335608038!3d-6.990463002666192!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e93f57604af1%3A0xa277ba293a3b53dd!2sRancamanyar%2C%20Kec.%20Baleendah%2C%20Kabupaten%20Bandung%2C%20Jawa%20Barat!5e0!3m2!1sid!2sid!4v1783895481406!5m2!1sid!2sid" width="1280" height="720" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <div className="aspect-video overflow-hidden rounded-2xl bg-[#EFE9DB] border border-[#2C3B2E]/10">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31681.277598329627!2d107.57207335608038!3d-6.990463002666192!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e93f57604af1%3A0xa277ba293a3b53dd!2sRancamanyar%2C%20Kec.%20Baleendah%2C%20Kabupaten%20Bandung%2C%20Jawa%20Barat!5e0!3m2!1sid!2sid!4v1783895481406!5m2!1sid!2sid"
+            title="Peta lokasi Desa Rancamanyar"
+            width="1280"
+            height="720"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            className="h-full w-full"
+          />
         </div>
       </div>
     </section>
