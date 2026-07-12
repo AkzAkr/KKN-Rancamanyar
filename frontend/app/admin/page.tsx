@@ -33,6 +33,7 @@ type FormState = {
     title: string;
     status: string;
     description: string;
+    image_url: string;
   };
   activities: {
     title: string;
@@ -48,6 +49,7 @@ type FormState = {
     role: string;
     division: string;
     study_program: string;
+    image_url: string;
   };
 };
 
@@ -75,6 +77,7 @@ const initialForms: FormState = {
     title: "",
     status: "Rencana",
     description: "",
+    image_url: "",
   },
   activities: {
     title: "",
@@ -90,6 +93,7 @@ const initialForms: FormState = {
     role: "",
     division: "",
     study_program: "",
+    image_url: "",
   },
 };
 
@@ -112,11 +116,13 @@ const tableLabels: Record<Exclude<ViewKey, "overview">, string> = {
 
 const selectColumns: Record<Exclude<ViewKey, "overview">, string> = {
   notes: "id, category, title, description, metadata, created_at",
-  programs: "id, title, status, description, created_at",
+  programs: "id, title, status, description, image_url, created_at",
   activities: "id, title, activity_date, description, created_at",
   gallery: "id, title, image_url, created_at",
-  members: "id, name, role, division, study_program, created_at",
+  members: "id, name, role, division, study_program, image_url, created_at",
 };
+
+const assetBucket = "kkn-assets";
 
 function cleanPayload<T extends Record<string, string>>(form: T) {
   return Object.fromEntries(
@@ -127,6 +133,11 @@ function cleanPayload<T extends Record<string, string>>(form: T) {
 function getInitials(user: User | null) {
   const email = user?.email ?? "Admin";
   return email.slice(0, 2).toUpperCase();
+}
+
+function extensionFromFile(file: File) {
+  const extension = file.name.split(".").pop()?.toLowerCase();
+  return extension && extension.length <= 5 ? extension : "jpg";
 }
 
 export default function AdminPage() {
@@ -141,6 +152,7 @@ export default function AdminPage() {
   const [editing, setEditing] = useState<EditingState>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState<Exclude<ViewKey, "overview"> | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -323,6 +335,50 @@ export default function AdminPage() {
     }));
   };
 
+  const uploadImage = async (
+    table: Exclude<ViewKey, "overview">,
+    file: File,
+  ) => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setError("Konfigurasi Supabase belum lengkap.");
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setError("File harus berupa gambar.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Ukuran gambar maksimal 5 MB.");
+      return;
+    }
+
+    setUploading(table);
+    setError(null);
+    setMessage(null);
+
+    const path = `${table}/${Date.now()}-${crypto.randomUUID()}.${extensionFromFile(file)}`;
+    const { error: uploadError } = await supabase.storage
+      .from(assetBucket)
+      .upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      setError(uploadError.message);
+      setUploading(null);
+      return;
+    }
+
+    const { data } = supabase.storage.from(assetBucket).getPublicUrl(path);
+    updateForm(table, "image_url", data.publicUrl);
+    setMessage("Gambar berhasil diupload. Jangan lupa simpan data.");
+    setUploading(null);
+  };
+
   const startEdit = (table: Exclude<ViewKey, "overview">, record: RecordsState[typeof table][number]) => {
     if (table === "notes") {
       const item = record as NoteRecord;
@@ -345,6 +401,7 @@ export default function AdminPage() {
           title: item.title,
           status: item.status,
           description: item.description ?? "",
+          image_url: item.image_url ?? "",
         },
       }));
     }
@@ -381,6 +438,7 @@ export default function AdminPage() {
           role: item.role ?? "",
           division: item.division ?? "",
           study_program: item.study_program ?? "",
+          image_url: item.image_url ?? "",
         },
       }));
     }
@@ -410,6 +468,12 @@ export default function AdminPage() {
     setSaving(true);
     setMessage(null);
     setError(null);
+
+    if (table === "gallery" && !forms.gallery.image_url.trim()) {
+      setError("Upload foto terlebih dahulu sebelum menyimpan galeri.");
+      setSaving(false);
+      return;
+    }
 
     const payload = cleanPayload(forms[table]);
     const activeEdit = editing?.table === table ? editing : null;
@@ -651,7 +715,9 @@ export default function AdminPage() {
                 records={records.programs}
                 editing={editing?.table === "programs" ? editing : null}
                 saving={saving}
+                uploading={uploading === "programs"}
                 onChange={(field, value) => updateForm("programs", field, value)}
+                onUpload={(file) => uploadImage("programs", file)}
                 onSubmit={(event) => saveRecord("programs", event)}
                 onEdit={(record) => startEdit("programs", record)}
                 onDelete={(id) => deleteRecord("programs", id)}
@@ -679,7 +745,9 @@ export default function AdminPage() {
                 records={records.gallery}
                 editing={editing?.table === "gallery" ? editing : null}
                 saving={saving}
+                uploading={uploading === "gallery"}
                 onChange={(field, value) => updateForm("gallery", field, value)}
+                onUpload={(file) => uploadImage("gallery", file)}
                 onSubmit={(event) => saveRecord("gallery", event)}
                 onEdit={(record) => startEdit("gallery", record)}
                 onDelete={(id) => deleteRecord("gallery", id)}
@@ -693,7 +761,9 @@ export default function AdminPage() {
                 records={records.members}
                 editing={editing?.table === "members" ? editing : null}
                 saving={saving}
+                uploading={uploading === "members"}
                 onChange={(field, value) => updateForm("members", field, value)}
+                onUpload={(file) => uploadImage("members", file)}
                 onSubmit={(event) => saveRecord("members", event)}
                 onEdit={(record) => startEdit("members", record)}
                 onDelete={(id) => deleteRecord("members", id)}
@@ -750,6 +820,11 @@ type CommonViewProps<TRecord, TForm> = {
   onCancel: () => void;
 };
 
+type UploadViewProps = {
+  uploading: boolean;
+  onUpload: (file: File) => void;
+};
+
 function Field({
   label,
   children,
@@ -767,6 +842,75 @@ function Field({
 
 const inputClass =
   "mt-2 w-full rounded-xl border border-[#2C3B2E]/15 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#C08A2E]";
+
+function ImageUploadField({
+  label,
+  value,
+  uploading,
+  onUpload,
+  onClear,
+}: {
+  label: string;
+  value: string;
+  uploading: boolean;
+  onUpload: (file: File) => void;
+  onClear: () => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-[#2C3B2E]/10 bg-[#F7F4ED] p-4">
+      <div className="grid gap-4 md:grid-cols-[160px_1fr] md:items-center">
+        <div className="flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-[#2C3B2E]/10 bg-white">
+          {value ? (
+            <img
+              src={value}
+              alt="Pratinjau gambar"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span className="px-4 text-center text-xs text-[#4A5D45]/70">
+              Belum ada gambar
+            </span>
+          )}
+        </div>
+        <div>
+          <p className="mb-2 text-sm font-semibold text-[#2C3B2E]">{label}</p>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            disabled={uploading}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) {
+                onUpload(file);
+              }
+              event.currentTarget.value = "";
+            }}
+            className="block w-full text-sm text-[#4A5D45] file:mr-4 file:rounded-lg file:border-0 file:bg-[#2C3B2E] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[#3d5138] disabled:opacity-60"
+          />
+          <p className="mt-2 text-xs text-[#4A5D45]/70">
+            Format JPG, PNG, WebP, atau GIF. Maksimal 5 MB.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {uploading ? (
+              <span className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-[#4A5D45]">
+                Mengupload...
+              </span>
+            ) : null}
+            {value ? (
+              <button
+                type="button"
+                onClick={onClear}
+                className="rounded-lg border border-[#2C3B2E]/15 bg-white px-3 py-1.5 text-xs font-semibold text-[#2C3B2E] hover:border-[#2C3B2E]"
+              >
+                Kosongkan Gambar
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function FormActions({
   editing,
@@ -930,12 +1074,14 @@ function ProgramsView({
   records,
   editing,
   saving,
+  uploading,
   onChange,
+  onUpload,
   onSubmit,
   onEdit,
   onDelete,
   onCancel,
-}: CommonViewProps<ProgramRecord, FormState["programs"]>) {
+}: CommonViewProps<ProgramRecord, FormState["programs"]> & UploadViewProps) {
   return (
     <Section title="Program Kerja" subtitle="Kelola program kerja yang tampil di halaman utama.">
       <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
@@ -954,6 +1100,13 @@ function ProgramsView({
         <Field label="Deskripsi">
           <textarea value={form.description} onChange={(event) => onChange("description", event.target.value)} rows={4} className={`${inputClass} resize-none`} />
         </Field>
+        <ImageUploadField
+          label="Gambar Program Kerja"
+          value={form.image_url}
+          uploading={uploading}
+          onUpload={onUpload}
+          onClear={() => onChange("image_url", "")}
+        />
         <FormActions editing={editing} saving={saving} onCancel={onCancel} />
       </form>
 
@@ -963,6 +1116,13 @@ function ProgramsView({
         <div className="grid gap-4 md:grid-cols-2">
           {records.map((record) => (
             <div key={record.id} className="rounded-2xl border border-[#2C3B2E]/10 bg-white p-5">
+              {record.image_url ? (
+                <img
+                  src={record.image_url}
+                  alt={record.title}
+                  className="mb-4 aspect-video w-full rounded-xl object-cover"
+                />
+              ) : null}
               <div className="mb-3 flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold text-[#C08A2E]">{record.status}</p>
@@ -1034,26 +1194,29 @@ function GalleryView({
   records,
   editing,
   saving,
+  uploading,
   onChange,
+  onUpload,
   onSubmit,
   onEdit,
   onDelete,
   onCancel,
-}: CommonViewProps<GalleryRecord, FormState["gallery"]>) {
+}: CommonViewProps<GalleryRecord, FormState["gallery"]> & UploadViewProps) {
   return (
     <Section title="Galeri" subtitle="Tambahkan URL foto dari Supabase Storage, Drive publik, atau hosting gambar lain.">
       <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div>
           <Field label="Judul Foto">
             <input value={form.title} onChange={(event) => onChange("title", event.target.value)} className={inputClass} />
           </Field>
-          <Field label="URL Gambar">
-            <input required type="url" value={form.image_url} onChange={(event) => onChange("image_url", event.target.value)} className={inputClass} placeholder="https://..." />
-          </Field>
         </div>
-        {form.image_url ? (
-          <img src={form.image_url} alt="Pratinjau foto" className="h-32 w-32 rounded-xl object-cover border border-[#2C3B2E]/10" />
-        ) : null}
+        <ImageUploadField
+          label="Upload Foto Galeri"
+          value={form.image_url}
+          uploading={uploading}
+          onUpload={onUpload}
+          onClear={() => onChange("image_url", "")}
+        />
         <FormActions editing={editing} saving={saving} onCancel={onCancel} />
       </form>
 
@@ -1083,12 +1246,14 @@ function MembersView({
   records,
   editing,
   saving,
+  uploading,
   onChange,
+  onUpload,
   onSubmit,
   onEdit,
   onDelete,
   onCancel,
-}: CommonViewProps<MemberRecord, FormState["members"]>) {
+}: CommonViewProps<MemberRecord, FormState["members"]> & UploadViewProps) {
   return (
     <Section title="Anggota" subtitle="Kelola nama, jabatan, divisi, dan program studi anggota KKN.">
       <form onSubmit={onSubmit} className="mb-6 rounded-2xl border border-[#2C3B2E]/10 bg-white p-6 space-y-4">
@@ -1106,6 +1271,13 @@ function MembersView({
             <input value={form.study_program} onChange={(event) => onChange("study_program", event.target.value)} className={inputClass} />
           </Field>
         </div>
+        <ImageUploadField
+          label="Foto Profil Anggota"
+          value={form.image_url}
+          uploading={uploading}
+          onUpload={onUpload}
+          onClear={() => onChange("image_url", "")}
+        />
         <FormActions editing={editing} saving={saving} onCancel={onCancel} />
       </form>
 
@@ -1125,7 +1297,20 @@ function MembersView({
             <tbody>
               {records.map((record) => (
                 <tr key={record.id} className="border-b border-[#2C3B2E]/5 align-top">
-                  <td className="px-6 py-3 font-medium">{record.name}</td>
+                  <td className="px-6 py-3 font-medium">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 overflow-hidden rounded-full bg-[#EFE9DB]">
+                        {record.image_url ? (
+                          <img
+                            src={record.image_url}
+                            alt={record.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : null}
+                      </div>
+                      {record.name}
+                    </div>
+                  </td>
                   <td className="px-6 py-3 hidden md:table-cell text-[#4A5D45]">{record.role || "Anggota"}</td>
                   <td className="px-6 py-3 hidden md:table-cell text-[#4A5D45]">{record.division || "-"}</td>
                   <td className="px-6 py-3"><RowActions record={record} onEdit={onEdit} onDelete={onDelete} /></td>

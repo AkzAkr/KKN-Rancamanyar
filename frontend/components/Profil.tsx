@@ -28,7 +28,7 @@ export default function Profil() {
     const loadMembers = async () => {
       const { data } = await supabase
         .from("members")
-        .select("id, name, role, division, study_program, created_at")
+        .select("id, name, role, division, study_program, image_url, created_at")
         .order("created_at", { ascending: true });
 
       setMembers(data ?? []);
@@ -89,10 +89,20 @@ export default function Profil() {
                     <div className="absolute right-5 top-5 font-display text-5xl font-semibold text-[#2C3B2E]/5">
                       {String(index + 1).padStart(2, "0")}
                     </div>
-                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFE9DB] ring-1 ring-[#C08A2E]/20">
-                      <span className="font-display text-lg text-[#C08A2E] font-semibold">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+                    <div className="mb-5 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-[#EFE9DB] ring-1 ring-[#C08A2E]/20">
+                      {member.image_url ? (
+                        <img
+                          src={member.image_url}
+                          alt={member.name}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span className="font-display text-lg text-[#C08A2E] font-semibold">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                      )}
                     </div>
                     <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#4A5D45]/70">
                       {member.role}
@@ -160,10 +170,20 @@ export default function Profil() {
                       key={member.id}
                       className="member-card content-card snap-start shrink-0 w-44 rounded-2xl p-4 card-hover text-center"
                     >
-                      <div className="mb-4 flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-[#EFE9DB] to-white ring-1 ring-[#2C3B2E]/5">
-                        <span className="font-display text-4xl font-semibold text-[#C08A2E]">
-                          {member.name.slice(0, 1).toUpperCase()}
-                        </span>
+                      <div className="mb-4 flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#EFE9DB] to-white ring-1 ring-[#2C3B2E]/5">
+                        {member.image_url ? (
+                          <img
+                            src={member.image_url}
+                            alt={member.name}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          <span className="font-display text-4xl font-semibold text-[#C08A2E]">
+                            {member.name.slice(0, 1).toUpperCase()}
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm font-semibold leading-snug">
                         {member.name}

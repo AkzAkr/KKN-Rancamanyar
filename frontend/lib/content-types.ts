@@ -12,6 +12,7 @@ export type ProgramRecord = {
   title: string;
   status: string;
   description: string | null;
+  image_url: string | null;
   created_at: string | null;
 };
 
@@ -36,5 +37,6 @@ export type MemberRecord = {
   role: string | null;
   division: string | null;
   study_program: string | null;
+  image_url: string | null;
   created_at: string | null;
 };

@@ -20,7 +20,7 @@ export default function ProgramKerja() {
     const loadPrograms = async () => {
       const { data } = await supabase
         .from("programs")
-        .select("id, title, status, description, created_at")
+        .select("id, title, status, description, image_url, created_at")
         .order("created_at", { ascending: false });
 
       setPrograms(data ?? []);
@@ -60,19 +60,30 @@ export default function ProgramKerja() {
             {programs.map((program) => (
               <div
                 key={program.id}
-                className="content-card rounded-2xl p-7 card-hover"
+                className="content-card overflow-hidden rounded-2xl card-hover"
               >
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${statusClass(program.status)}`}
-                >
-                  {program.status}
-                </span>
-                <h3 className="font-display text-2xl font-semibold mb-3 leading-tight">
-                  {program.title}
-                </h3>
-                <p className="text-sm text-[#4A5D45] leading-relaxed">
-                  {program.description || "Belum ada deskripsi."}
-                </p>
+                {program.image_url ? (
+                  <img
+                    src={program.image_url}
+                    alt={program.title}
+                    className="aspect-video w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : null}
+                <div className="p-7">
+                  <span
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${statusClass(program.status)}`}
+                  >
+                    {program.status}
+                  </span>
+                  <h3 className="font-display text-2xl font-semibold mb-3 leading-tight">
+                    {program.title}
+                  </h3>
+                  <p className="text-sm text-[#4A5D45] leading-relaxed">
+                    {program.description || "Belum ada deskripsi."}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

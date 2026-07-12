@@ -14,6 +14,7 @@ create table if not exists public.programs (
   title text not null,
   status text not null default 'Rencana',
   description text,
+  image_url text,
   created_at timestamp with time zone default now()
 );
 
@@ -41,8 +42,26 @@ create table if not exists public.members (
   role text,
   division text,
   study_program text,
+  image_url text,
   created_at timestamp with time zone default now()
 );
+
+alter table public.programs add column if not exists image_url text;
+alter table public.members add column if not exists image_url text;
+
+-- Bucket publik untuk gambar program kerja, galeri, dan profil anggota
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'kkn-assets',
+  'kkn-assets',
+  true,
+  5242880,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+on conflict (id) do update
+set public = excluded.public,
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
 
 -- Daftar email yang boleh menulis data dari admin panel
 create table if not exists public.admin_users (
@@ -103,6 +122,11 @@ drop policy if exists "Allow authenticated users to delete members" on public.me
 
 drop policy if exists "Allow admin users to read admin list" on public.admin_users;
 
+drop policy if exists "Allow public read access to kkn assets" on storage.objects;
+drop policy if exists "Allow admin users to upload kkn assets" on storage.objects;
+drop policy if exists "Allow admin users to update kkn assets" on storage.objects;
+drop policy if exists "Allow admin users to delete kkn assets" on storage.objects;
+
 -- Kebijakan baca publik
 create policy "Allow public read access to notes"
   on public.notes
@@ -133,6 +157,27 @@ create policy "Allow admin users to read admin list"
   on public.admin_users
   for select
   using (public.is_admin());
+
+create policy "Allow public read access to kkn assets"
+  on storage.objects
+  for select
+  using (bucket_id = 'kkn-assets');
+
+create policy "Allow admin users to upload kkn assets"
+  on storage.objects
+  for insert
+  with check (bucket_id = 'kkn-assets' and public.is_admin());
+
+create policy "Allow admin users to update kkn assets"
+  on storage.objects
+  for update
+  using (bucket_id = 'kkn-assets' and public.is_admin())
+  with check (bucket_id = 'kkn-assets' and public.is_admin());
+
+create policy "Allow admin users to delete kkn assets"
+  on storage.objects
+  for delete
+  using (bucket_id = 'kkn-assets' and public.is_admin());
 
 -- Kebijakan tulis hanya untuk pengguna terautentikasi
 create policy "Allow authenticated users to insert notes"

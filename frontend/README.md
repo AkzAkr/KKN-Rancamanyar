@@ -90,10 +90,12 @@ Tambahkan environment variable dari langkah sebelumnya di Project Settings -> En
 Masuk ke `/admin` memakai akun Supabase Auth yang emailnya ada di `NEXT_PUBLIC_ADMIN_EMAILS` dan tabel `admin_users`. Dari panel admin, konten berikut bisa ditambah, diedit, dan dihapus:
 
 - Catatan mading (`notes`)
-- Program kerja (`programs`)
+- Program kerja (`programs`), termasuk upload gambar program
 - Dokumentasi kegiatan (`activities`)
-- Foto galeri dari URL gambar (`gallery`)
-- Profil anggota (`members`)
+- Foto galeri (`gallery`) melalui upload gambar
+- Profil anggota (`members`), termasuk upload foto profil
+
+Schema juga membuat bucket Supabase Storage bernama `kkn-assets`. Jalankan ulang `supabase/schema.sql` jika upload gambar gagal karena bucket atau policy belum ada.
 
 Jika tombol simpan menampilkan error izin, jalankan ulang `supabase/schema.sql`, lalu pastikan email admin sudah ada di `public.admin_users`.
 
