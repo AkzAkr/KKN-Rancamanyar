@@ -19,13 +19,15 @@ function NoteCard({ note, index }: { note: NoteRecord; index: number }) {
 
   return (
     <div
-      className={`relative rounded-lg bg-white p-5 shadow-lg ${rotateClass} transition-transform duration-300 hover:rotate-0`}
+      className={`relative rounded-xl bg-white p-5 shadow-lg ring-1 ring-[#2C3B2E]/5 ${rotateClass} transition-transform duration-300 hover:rotate-0`}
     >
       <div
         className={`absolute -top-3 left-1/2 h-6 w-14 -translate-x-1/2 ${badgeClass} ${badgeRotateClass} shadow-sm`}
       />
       <p className="label-eyebrow mb-2">{note.category}</p>
-      <h3 className="font-display mb-1 font-semibold">{note.title}</h3>
+      <h3 className="font-display mb-2 text-lg font-semibold leading-tight">
+        {note.title}
+      </h3>
       <p className="text-sm leading-relaxed text-[#4A5D45]">
         {note.description || "Belum ada rincian catatan."}
       </p>
@@ -76,21 +78,21 @@ export default function Mading() {
   return (
     <section
       id="pencatatan"
-      className="py-24 px-6 border-t border-[#2C3B2E]/10"
+      className="section-shell py-24 px-6 border-t border-[#2C3B2E]/10"
     >
-      <div className="max-w-6xl mx-auto">
-        <div className="max-w-xl mb-16">
+      <div className="relative max-w-6xl mx-auto">
+        <div className="max-w-2xl mb-16">
           <p className="label-eyebrow mb-3">Papan Pencatatan</p>
-          <h2 className="font-display text-3xl md:text-4xl font-semibold mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
             Catatan Kelompok
           </h2>
-          <p className="text-[#4A5D45] leading-relaxed">
+          <p className="text-[#4A5D45] leading-relaxed text-base md:text-lg">
             Rekap singkat seputar kas, kehadiran, dan progres harian kelompok,
             diperbarui rutin lewat admin panel.
           </p>
         </div>
 
-        <div className="relative bg-[#EFE9DB] rounded-3xl border border-[#2C3B2E]/10 px-6 md:px-10 py-14 overflow-hidden">
+        <div className="relative rounded-3xl border border-[#2C3B2E]/10 bg-[#EFE9DB] px-6 md:px-10 py-14 overflow-hidden shadow-inner shadow-[#2C3B2E]/5">
           <div
             className="absolute inset-0 opacity-[0.06]"
             style={{

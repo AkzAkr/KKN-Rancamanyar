@@ -34,15 +34,15 @@ export default function Dokumentasi() {
   return (
     <section
       id="dokumentasi"
-      className="py-24 px-6 border-t border-[#2C3B2E]/10"
+      className="section-shell py-24 px-6 border-t border-[#2C3B2E]/10"
     >
-      <div className="max-w-4xl mx-auto">
-        <div className="max-w-xl mb-14">
+      <div className="relative max-w-4xl mx-auto">
+        <div className="max-w-2xl mb-14">
           <p className="label-eyebrow mb-3">Dokumentasi Kegiatan</p>
-          <h2 className="font-display text-3xl md:text-4xl font-semibold mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
             Cerita dari Lapangan
           </h2>
-          <p className="text-[#4A5D45] leading-relaxed">
+          <p className="text-[#4A5D45] leading-relaxed text-base md:text-lg">
             Catatan perjalanan kegiatan kelompok, diperbarui berkala oleh tim.
           </p>
         </div>
@@ -65,11 +65,11 @@ export default function Dokumentasi() {
                     <div className="w-px flex-1 bg-[#2C3B2E]/15 mt-2"></div>
                   )}
                 </div>
-                <div className="bg-white rounded-2xl p-6 border border-[#2C3B2E]/10 flex-1 card-hover">
-                  <p className="text-xs text-[#C08A2E] font-semibold mb-2">
+                <div className="content-card rounded-2xl p-6 flex-1 card-hover">
+                  <p className="text-xs uppercase tracking-[0.16em] text-[#C08A2E] font-semibold mb-3">
                     {formatDate(activity.activity_date)}
                   </p>
-                  <h3 className="font-display text-lg font-semibold mb-2">
+                  <h3 className="font-display text-2xl font-semibold mb-3 leading-tight">
                     {activity.title}
                   </h3>
                   <p className="text-sm text-[#4A5D45] leading-relaxed">

@@ -37,7 +37,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative pt-40 pb-28 px-6 mountain-texture overflow-hidden">
+    <section className="section-shell relative pt-40 pb-28 px-6 mountain-texture overflow-hidden">
       <svg
         className="absolute top-16 left-1/2 -translate-x-1/2 w-[640px] max-w-[90vw] opacity-70"
         height="140"
@@ -59,14 +59,14 @@ export default function Hero() {
         />
       </svg>
 
-      <div className="max-w-3xl mx-auto text-center relative z-10">
+      <div className="max-w-4xl mx-auto text-center relative z-10">
         <p className="label-eyebrow mb-5">Desa Rancamanyar &middot; 2026</p>
-        <h1 className="font-display text-5xl md:text-6xl font-semibold leading-[1.1] mb-6">
+        <h1 className="font-display text-5xl md:text-7xl font-semibold leading-[1.04] mb-6">
           Belajar, Berkarya,
           <br />
           Mengabdi Bersama
         </h1>
-        <p className="text-[#4A5D45] text-lg leading-relaxed max-w-xl mx-auto mb-10">
+        <p className="text-[#4A5D45] text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-10">
           Kelompok Kuliah Kerja Nyata Rancamanyar hadir untuk tumbuh bersama
           masyarakat, mencatat setiap langkah pengabdian dari rencana hingga
           cerita di lapangan.
@@ -86,24 +86,24 @@ export default function Hero() {
           </a>
         </div>
 
-        <div className="grid grid-cols-3 max-w-md mx-auto gap-6 pt-8 border-t border-[#2C3B2E]/10">
-          <div>
-            <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
+        <div className="soft-panel grid grid-cols-3 max-w-xl mx-auto gap-0 overflow-hidden rounded-2xl">
+          <div className="p-5">
+            <p className="font-display text-4xl font-semibold text-[#2C3B2E]">
               {stats.members}
             </p>
-            <p className="text-xs text-[#4A5D45] mt-1">Anggota Tim</p>
+            <p className="text-xs font-semibold text-[#4A5D45] mt-1">Anggota Tim</p>
           </div>
-          <div>
-            <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
+          <div className="border-x border-[#2C3B2E]/10 p-5">
+            <p className="font-display text-4xl font-semibold text-[#2C3B2E]">
               {stats.programs}
             </p>
-            <p className="text-xs text-[#4A5D45] mt-1">Program Kerja</p>
+            <p className="text-xs font-semibold text-[#4A5D45] mt-1">Program Kerja</p>
           </div>
-          <div>
-            <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
+          <div className="p-5">
+            <p className="font-display text-4xl font-semibold text-[#2C3B2E]">
               {stats.activities}
             </p>
-            <p className="text-xs text-[#4A5D45] mt-1">Dokumentasi</p>
+            <p className="text-xs font-semibold text-[#4A5D45] mt-1">Dokumentasi</p>
           </div>
         </div>
       </div>

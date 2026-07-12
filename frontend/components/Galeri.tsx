@@ -32,12 +32,12 @@ export default function Galeri() {
   return (
     <section
       id="galeri"
-      className="py-24 px-6 bg-[#EFE9DB]/50 border-t border-[#2C3B2E]/10"
+      className="section-shell py-24 px-6 bg-[#EFE9DB]/50 border-t border-[#2C3B2E]/10"
     >
-      <div className="max-w-6xl mx-auto">
-        <div className="max-w-xl mb-14">
+      <div className="relative max-w-6xl mx-auto">
+        <div className="max-w-2xl mb-14">
           <p className="label-eyebrow mb-3">Galeri</p>
-          <h2 className="font-display text-3xl md:text-4xl font-semibold mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
             Momen Kegiatan
           </h2>
         </div>
@@ -55,7 +55,7 @@ export default function Galeri() {
             {gallery.map((item) => (
               <figure
                 key={item.id}
-                className="group overflow-hidden rounded-xl bg-white border border-[#2C3B2E]/10"
+                className="content-card group overflow-hidden rounded-2xl card-hover"
               >
                 <img
                   src={item.image_url ?? ""}
@@ -65,7 +65,7 @@ export default function Galeri() {
                   decoding="async"
                 />
                 {item.title ? (
-                  <figcaption className="px-3 py-2 text-xs font-medium text-[#4A5D45]">
+                  <figcaption className="px-4 py-3 text-xs font-semibold text-[#4A5D45]">
                     {item.title}
                   </figcaption>
                 ) : null}

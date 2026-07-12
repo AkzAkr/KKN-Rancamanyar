@@ -46,18 +46,27 @@ export default function Profil() {
   const divisionGroups = useMemo(() => groupByDivision(members), [members]);
 
   return (
-    <section id="profil" className="py-24 px-6 border-t border-[#2C3B2E]/10">
-      <div className="max-w-6xl mx-auto">
-        <div className="max-w-xl mb-14">
+    <section
+      id="profil"
+      className="section-shell py-24 px-6 border-t border-[#2C3B2E]/10"
+    >
+      <div className="relative max-w-6xl mx-auto">
+        <div className="mb-14 grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
+          <div className="max-w-2xl">
           <p className="label-eyebrow mb-3">Profil Kelompok</p>
-          <h2 className="font-display text-3xl md:text-4xl font-semibold mb-4">
+          <h2 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
             Siapa Kami
           </h2>
-          <p className="text-[#4A5D45] leading-relaxed">
+          <p className="text-[#4A5D45] leading-relaxed text-base md:text-lg">
             Beranggotakan mahasiswa lintas jurusan, kelompok kami ditempatkan
             di Desa Rancamanyar dengan dampingan dosen pembimbing lapangan
             sepanjang program berjalan.
           </p>
+          </div>
+          <div className="soft-panel rounded-2xl p-5 text-sm leading-relaxed text-[#4A5D45]">
+            Data profil di bawah ini dikelola langsung dari admin panel, jadi
+            struktur anggota dan divisi selalu mengikuti pembaruan terbaru.
+          </div>
         </div>
 
         {loading ? (
@@ -71,23 +80,31 @@ export default function Profil() {
         ) : (
           <>
             {leaders.length > 0 ? (
-              <div className="grid md:grid-cols-3 gap-6 mb-14">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-14">
                 {leaders.slice(0, 6).map((member, index) => (
                   <div
                     key={member.id}
-                    className="bg-white rounded-2xl p-6 border border-[#2C3B2E]/10 card-hover"
+                    className="content-card rounded-2xl p-6 card-hover overflow-hidden relative"
                   >
-                    <div className="w-11 h-11 rounded-full bg-[#EFE9DB] flex items-center justify-center mb-4">
-                      <span className="font-display text-[#C08A2E] font-semibold">
+                    <div className="absolute right-5 top-5 font-display text-5xl font-semibold text-[#2C3B2E]/5">
+                      {String(index + 1).padStart(2, "0")}
+                    </div>
+                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EFE9DB] ring-1 ring-[#C08A2E]/20">
+                      <span className="font-display text-lg text-[#C08A2E] font-semibold">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                     </div>
-                    <p className="text-xs text-[#4A5D45] mb-1">
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#4A5D45]/70">
                       {member.role}
                     </p>
-                    <p className="font-display font-semibold text-lg">
+                    <p className="font-display font-semibold text-xl leading-tight">
                       {member.name}
                     </p>
+                    {member.study_program ? (
+                      <p className="mt-3 text-xs text-[#4A5D45]">
+                        {member.study_program}
+                      </p>
+                    ) : null}
                   </div>
                 ))}
               </div>
@@ -97,29 +114,40 @@ export default function Profil() {
               {Object.entries(divisionGroups).map(([division, items]) => (
                 <div
                   key={division}
-                  className="bg-white rounded-2xl p-6 border border-[#2C3B2E]/10 card-hover"
+                  className="content-card rounded-2xl p-6 card-hover"
                 >
-                  <p className="label-eyebrow mb-3">{division}</p>
-                  <ul className="space-y-1.5 text-sm">
+                  <div className="mb-4 flex items-center justify-between gap-4">
+                    <p className="label-eyebrow">{division}</p>
+                    <span className="rounded-full bg-[#EFE9DB] px-3 py-1 text-xs font-semibold text-[#4A5D45]">
+                      {items.length} orang
+                    </span>
+                  </div>
+                  <ul className="space-y-2 text-sm">
                     {items.map((member) => (
-                      <li key={member.id} className="font-medium">
+                      <li
+                        key={member.id}
+                        className="flex items-center gap-2 font-medium text-[#2C3B2E]"
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#C08A2E]" />
                         {member.name}
                       </li>
                     ))}
                   </ul>
                 </div>
               ))}
-              <div className="bg-white rounded-2xl p-6 border border-[#2C3B2E]/10 card-hover flex flex-col justify-center items-center text-center">
-                <p className="text-xs text-[#4A5D45] mb-1">Total Anggota</p>
-                <p className="font-display text-3xl font-semibold text-[#2C3B2E]">
+              <div className="rounded-2xl border border-[#2C3B2E]/10 bg-[#2C3B2E] p-6 text-center text-[#F7F4ED] shadow-lg shadow-[#2C3B2E]/10 flex flex-col justify-center items-center">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#F7F4ED]/70">
+                  Total Anggota
+                </p>
+                <p className="font-display text-5xl font-semibold">
                   {members.length}
                 </p>
-                <p className="text-xs text-[#4A5D45] mt-1">Mahasiswa</p>
+                <p className="mt-2 text-xs text-[#F7F4ED]/75">Mahasiswa</p>
               </div>
             </div>
 
             <div className="mt-16">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-end justify-between gap-6 mb-6">
                 <p className="label-eyebrow">Seluruh Anggota</p>
                 <p className="text-xs text-[#4A5D45]/60 hidden sm:block">
                   Geser untuk melihat lainnya
@@ -130,15 +158,17 @@ export default function Profil() {
                   {members.map((member) => (
                     <div
                       key={member.id}
-                      className="member-card snap-start shrink-0 w-40 bg-white rounded-2xl p-4 border border-[#2C3B2E]/10 card-hover text-center"
+                      className="member-card content-card snap-start shrink-0 w-44 rounded-2xl p-4 card-hover text-center"
                     >
-                      <div className="aspect-square rounded-xl bg-[#EFE9DB] mb-3 flex items-center justify-center">
-                        <span className="font-display text-2xl font-semibold text-[#C08A2E]">
+                      <div className="mb-4 flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-[#EFE9DB] to-white ring-1 ring-[#2C3B2E]/5">
+                        <span className="font-display text-4xl font-semibold text-[#C08A2E]">
                           {member.name.slice(0, 1).toUpperCase()}
                         </span>
                       </div>
-                      <p className="text-sm font-semibold">{member.name}</p>
-                      <p className="text-xs text-[#4A5D45]">
+                      <p className="text-sm font-semibold leading-snug">
+                        {member.name}
+                      </p>
+                      <p className="mt-1 text-xs text-[#4A5D45]">
                         {member.study_program || member.role || "Anggota"}
                       </p>
                     </div>
