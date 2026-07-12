@@ -18,6 +18,14 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+html {
+  scroll-padding-top: 104px;
+}
+
+section[id] {
+  scroll-margin-top: 104px;
+}
+
 .font-display {
   font-family: var(--font-fraunces), serif;
 }
@@ -74,6 +82,39 @@ body {
   background:
     linear-gradient(135deg, rgba(239, 233, 219, 0.92), rgba(255, 255, 255, 0.74));
   border: 1px solid rgba(44, 59, 46, 0.1);
+}
+
+.paper-note {
+  position: relative;
+}
+
+.paper-note::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -13px;
+  z-index: 2;
+  width: 66px;
+  height: 22px;
+  transform: translateX(-50%) rotate(var(--tape-rotate, 1deg));
+  border-radius: 2px;
+  background: rgba(192, 138, 46, 0.68);
+  box-shadow: 0 4px 10px -7px rgba(44, 59, 46, 0.6);
+}
+
+.paper-note::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -13px;
+  z-index: 3;
+  width: 66px;
+  height: 22px;
+  transform: translateX(-50%) rotate(var(--tape-rotate, 1deg));
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22), transparent 22%, transparent 78%, rgba(255, 255, 255, 0.18)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px 7px);
+  opacity: 0.7;
 }
 
 .card-hover {

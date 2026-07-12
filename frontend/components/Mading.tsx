@@ -14,16 +14,13 @@ function chunkNotes(notes: NoteRecord[], size = 6): NoteRecord[][] {
 
 function NoteCard({ note, index }: { note: NoteRecord; index: number }) {
   const rotateClass = index % 2 === 0 ? "-rotate-2" : "rotate-1";
-  const badgeClass = index % 2 === 0 ? "bg-[#C08A2E]/70" : "bg-[#4A5D45]/60";
-  const badgeRotateClass = index % 2 === 0 ? "rotate-1" : "-rotate-2";
+  const tapeRotate = index % 2 === 0 ? "1.5deg" : "-2deg";
 
   return (
     <div
-      className={`relative rounded-xl bg-white p-5 shadow-lg ring-1 ring-[#2C3B2E]/5 ${rotateClass} transition-transform duration-300 hover:rotate-0`}
+      className={`paper-note rounded-xl bg-white p-5 shadow-lg ring-1 ring-[#2C3B2E]/5 ${rotateClass} transition-transform duration-300 hover:rotate-0`}
+      style={{ "--tape-rotate": tapeRotate } as React.CSSProperties}
     >
-      <div
-        className={`absolute -top-3 left-1/2 h-6 w-14 -translate-x-1/2 ${badgeClass} ${badgeRotateClass} shadow-sm`}
-      />
       <p className="label-eyebrow mb-2">{note.category}</p>
       <h3 className="font-display mb-2 text-lg font-semibold leading-tight">
         {note.title}
@@ -120,7 +117,7 @@ export default function Mading() {
                   {pages.map((page, pageIndex) => (
                     <div
                       key={pageIndex}
-                      className="mading-page w-full shrink-0 grid gap-x-6 gap-y-10 px-1 sm:grid-cols-2 lg:grid-cols-3"
+                      className="mading-page w-full shrink-0 grid gap-x-6 gap-y-10 px-1 pt-4 sm:grid-cols-2 lg:grid-cols-3"
                     >
                       {page.map((note, noteIndex) => (
                         <NoteCard
