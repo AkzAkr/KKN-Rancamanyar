@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { MemberRecord } from "@/lib/content-types";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
@@ -16,6 +16,8 @@ function groupByDivision(members: MemberRecord[]) {
 export default function Profil() {
   const [members, setMembers] = useState<MemberRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [visibleRange, setVisibleRange] = useState({ start: 1, end: 1 });
+  const memberTrackRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const supabase = getSupabaseClient();
@@ -44,6 +46,57 @@ export default function Profil() {
   );
 
   const divisionGroups = useMemo(() => groupByDivision(members), [members]);
+
+  const updateVisibleRange = () => {
+    const track = memberTrackRef.current;
+    if (!track || members.length === 0) {
+      setVisibleRange({ start: 0, end: 0 });
+      return;
+    }
+
+    const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-member-card]"));
+    const trackLeft = track.scrollLeft;
+    const trackRight = track.scrollLeft + track.clientWidth;
+    let firstVisibleIndex = -1;
+    let lastVisibleIndex = -1;
+
+    cards.forEach((card, index) => {
+      const isVisible =
+        card.offsetLeft + card.offsetWidth > trackLeft + 8 &&
+        card.offsetLeft < trackRight - 8;
+
+      if (isVisible && firstVisibleIndex === -1) {
+        firstVisibleIndex = index;
+      }
+
+      if (isVisible) {
+        lastVisibleIndex = index;
+      }
+    });
+
+    setVisibleRange({
+      start: firstVisibleIndex >= 0 ? firstVisibleIndex + 1 : 1,
+      end: lastVisibleIndex >= 0 ? lastVisibleIndex + 1 : members.length,
+    });
+  };
+
+  const scrollMembers = (direction: "left" | "right") => {
+    const track = memberTrackRef.current;
+    if (!track) {
+      return;
+    }
+
+    track.scrollBy({
+      left: direction === "left" ? -track.clientWidth * 0.8 : track.clientWidth * 0.8,
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    updateVisibleRange();
+    window.addEventListener("resize", updateVisibleRange);
+    return () => window.removeEventListener("resize", updateVisibleRange);
+  }, [members.length]);
 
   return (
     <section
@@ -157,17 +210,46 @@ export default function Profil() {
             </div>
 
             <div className="mt-16">
-              <div className="flex items-end justify-between gap-6 mb-6">
-                <p className="label-eyebrow">Seluruh Anggota</p>
-                <p className="text-xs text-[#4A5D45]/60 hidden sm:block">
-                  Geser untuk melihat lainnya
-                </p>
+              <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="label-eyebrow">Seluruh Anggota</p>
+                  <p className="mt-2 text-xs text-[#4A5D45]/60">
+                    Menampilkan {visibleRange.start}-{visibleRange.end} dari {members.length} anggota
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => scrollMembers("left")}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2C3B2E]/10 bg-white text-[#2C3B2E] shadow-sm transition hover:bg-[#2C3B2E] hover:text-white"
+                    aria-label="Lihat anggota sebelumnya"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollMembers("right")}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2C3B2E]/10 bg-white text-[#2C3B2E] shadow-sm transition hover:bg-[#2C3B2E] hover:text-white"
+                    aria-label="Lihat anggota berikutnya"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div className="relative">
-                <div className="member-scroll flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 scroll-smooth snap-x snap-mandatory">
+                <div
+                  ref={memberTrackRef}
+                  onScroll={updateVisibleRange}
+                  className="member-scroll flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 scroll-smooth snap-x snap-mandatory"
+                >
                   {members.map((member) => (
                     <div
                       key={member.id}
+                      data-member-card
                       className="member-card content-card snap-start shrink-0 w-44 rounded-2xl p-4 card-hover text-center"
                     >
                       <div className="mb-4 flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#EFE9DB] to-white ring-1 ring-[#2C3B2E]/5">
