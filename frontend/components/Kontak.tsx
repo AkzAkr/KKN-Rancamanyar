@@ -8,7 +8,7 @@ export default function Kontak() {
             Temui Kami
           </h2>
           <p className="text-[#4A5D45] leading-relaxed mb-8">
-            Kelompok KKN Rancamanyar berlokasi di Desa Rancamanyar. Silakan
+            Kelompok 8 KKN Rancamanyar berlokasi di Desa Rancamanyar. Silakan
             hubungi kami untuk informasi lebih lanjut mengenai program kerja
             atau kunjungan.
           </p>
