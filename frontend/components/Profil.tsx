@@ -4,6 +4,23 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { MemberRecord } from "@/lib/content-types";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
+// Prioritas role untuk sorting (ketua = 1, sekretaris = 2, bendahara = 3, lainnya = 99)
+const ROLE_PRIORITY: Record<string, number> = {
+  ketua: 1,
+  sekretaris: 2,
+  bendahara: 3,
+  "sekretaris 1": 2,
+  "sekretaris 2": 2,
+  "bendahara 1": 3,
+  "bendahara 2": 3,
+};
+
+function getRolePriority(role?: string | null): number {
+  if (!role) return 99;
+  const normalized = role.toLowerCase().trim();
+  return ROLE_PRIORITY[normalized] ?? 99;
+}
+
 function groupByDivision(members: MemberRecord[]) {
   return members.reduce<Record<string, MemberRecord[]>>((groups, member) => {
     const key = member.division?.trim() || "Tanpa Divisi";
@@ -30,9 +47,7 @@ export default function Profil() {
     const loadMembers = async () => {
       const { data } = await supabase
         .from("members")
-        .select(
-          "id, name, role, division, study_program, image_url, created_at",
-        )
+        .select("id, name, role, division, study_program, image_url, created_at")
         .order("created_at", { ascending: true });
 
       setMembers(data ?? []);
@@ -42,12 +57,23 @@ export default function Profil() {
     void loadMembers();
   }, []);
 
-  const leaders = useMemo(
-    () => members.filter((member) => Boolean(member.role?.trim())),
-    [members],
-  );
+  // Urutkan leaders berdasarkan prioritas role (ketua, sekretaris, bendahara)
+  const leaders = useMemo(() => {
+    const membersWithRole = members.filter((member) => Boolean(member.role?.trim()));
+    return membersWithRole.sort((a, b) => {
+      const priorityA = getRolePriority(a.role);
+      const priorityB = getRolePriority(b.role);
+      return priorityA - priorityB;
+    });
+  }, [members]);
 
-  const divisionGroups = useMemo(() => groupByDivision(members), [members]);
+  // Hilangkan "Tanpa Divisi" dari tampilan
+  const divisionGroups = useMemo(() => {
+    const allGroups = groupByDivision(members);
+    // Hapus key "Tanpa Divisi" jika ada
+    const { ["Tanpa Divisi"]: _, ...filteredGroups } = allGroups;
+    return filteredGroups;
+  }, [members]);
 
   const updateVisibleRange = () => {
     const track = memberTrackRef.current;
@@ -56,9 +82,7 @@ export default function Profil() {
       return;
     }
 
-    const cards = Array.from(
-      track.querySelectorAll<HTMLElement>("[data-member-card]"),
-    );
+    const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-member-card]"));
     const trackLeft = track.scrollLeft;
     const trackRight = track.scrollLeft + track.clientWidth;
     let firstVisibleIndex = -1;
@@ -91,10 +115,7 @@ export default function Profil() {
     }
 
     track.scrollBy({
-      left:
-        direction === "left"
-          ? -track.clientWidth * 0.8
-          : track.clientWidth * 0.8,
+      left: direction === "left" ? -track.clientWidth * 0.8 : track.clientWidth * 0.8,
       behavior: "smooth",
     });
   };
@@ -221,8 +242,7 @@ export default function Profil() {
                 <div>
                   <p className="label-eyebrow">Seluruh Anggota</p>
                   <p className="mt-2 text-xs text-[#4A5D45]/60">
-                    Menampilkan {visibleRange.start}-{visibleRange.end} dari{" "}
-                    {members.length} anggota
+                    Menampilkan {visibleRange.start}-{visibleRange.end} dari {members.length} anggota
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -232,14 +252,7 @@ export default function Profil() {
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2C3B2E]/10 bg-white text-[#2C3B2E] shadow-sm transition hover:bg-[#2C3B2E] hover:text-white"
                     aria-label="Lihat anggota sebelumnya"
                   >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M15 18l-6-6 6-6" />
                     </svg>
                   </button>
@@ -249,14 +262,7 @@ export default function Profil() {
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2C3B2E]/10 bg-white text-[#2C3B2E] shadow-sm transition hover:bg-[#2C3B2E] hover:text-white"
                     aria-label="Lihat anggota berikutnya"
                   >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M9 18l6-6-6-6" />
                     </svg>
                   </button>
