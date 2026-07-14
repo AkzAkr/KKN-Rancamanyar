@@ -30,7 +30,9 @@ export default function Profil() {
     const loadMembers = async () => {
       const { data } = await supabase
         .from("members")
-        .select("id, name, role, division, study_program, image_url, created_at")
+        .select(
+          "id, name, role, division, study_program, image_url, created_at",
+        )
         .order("created_at", { ascending: true });
 
       setMembers(data ?? []);
@@ -54,7 +56,9 @@ export default function Profil() {
       return;
     }
 
-    const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-member-card]"));
+    const cards = Array.from(
+      track.querySelectorAll<HTMLElement>("[data-member-card]"),
+    );
     const trackLeft = track.scrollLeft;
     const trackRight = track.scrollLeft + track.clientWidth;
     let firstVisibleIndex = -1;
@@ -87,7 +91,10 @@ export default function Profil() {
     }
 
     track.scrollBy({
-      left: direction === "left" ? -track.clientWidth * 0.8 : track.clientWidth * 0.8,
+      left:
+        direction === "left"
+          ? -track.clientWidth * 0.8
+          : track.clientWidth * 0.8,
       behavior: "smooth",
     });
   };
@@ -106,15 +113,15 @@ export default function Profil() {
       <div className="relative max-w-6xl mx-auto">
         <div className="mb-14 grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-end">
           <div className="max-w-2xl">
-          <p className="label-eyebrow mb-3">Profil Kelompok</p>
-          <h2 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
-            Siapa Kami
-          </h2>
-          <p className="text-[#4A5D45] leading-relaxed text-base md:text-lg">
-            Beranggotakan mahasiswa lintas jurusan, kelompok kami ditempatkan
-            di Desa Rancamanyar dengan dampingan dosen pembimbing lapangan
-            sepanjang program berjalan.
-          </p>
+            <p className="label-eyebrow mb-3">Profil Kelompok</p>
+            <h2 className="font-display text-4xl md:text-5xl font-semibold mb-4 leading-tight">
+              Siapa Kami
+            </h2>
+            <p className="text-[#4A5D45] leading-relaxed text-base md:text-lg">
+              Beranggotakan mahasiswa lintas jurusan, kelompok kami ditempatkan
+              di Desa Rancamanyar dengan dampingan dosen pembimbing lapangan
+              sepanjang program berjalan.
+            </p>
           </div>
           <div className="soft-panel rounded-2xl p-5 text-sm leading-relaxed text-[#4A5D45]">
             Data profil di bawah ini dikelola langsung dari admin panel, jadi
@@ -214,7 +221,8 @@ export default function Profil() {
                 <div>
                   <p className="label-eyebrow">Seluruh Anggota</p>
                   <p className="mt-2 text-xs text-[#4A5D45]/60">
-                    Menampilkan {visibleRange.start}-{visibleRange.end} dari {members.length} anggota
+                    Menampilkan {visibleRange.start}-{visibleRange.end} dari{" "}
+                    {members.length} anggota
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -224,7 +232,14 @@ export default function Profil() {
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2C3B2E]/10 bg-white text-[#2C3B2E] shadow-sm transition hover:bg-[#2C3B2E] hover:text-white"
                     aria-label="Lihat anggota sebelumnya"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M15 18l-6-6 6-6" />
                     </svg>
                   </button>
@@ -234,7 +249,14 @@ export default function Profil() {
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2C3B2E]/10 bg-white text-[#2C3B2E] shadow-sm transition hover:bg-[#2C3B2E] hover:text-white"
                     aria-label="Lihat anggota berikutnya"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M9 18l6-6-6-6" />
                     </svg>
                   </button>
